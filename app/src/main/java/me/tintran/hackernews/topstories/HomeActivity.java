@@ -9,12 +9,15 @@ import android.view.View;
 import android.widget.TextView;
 import java.util.List;
 import me.tintran.hackernews.R;
+import me.tintran.hackernews.data.Item;
+import me.tintran.hackernews.StoriesRepository;
 
 public class HomeActivity extends AppCompatActivity implements HomeContract.View {
 
   private TextView statusText;
   private StoriesAdapter storiesAdapter;
   private HomeContract.ActionsListener actionsListener;
+
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_home);
@@ -22,10 +25,10 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     setSupportActionBar(toolbar);
     statusText = (TextView) findViewById(R.id.statusTextView);
 
-    final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.storiesList);
+    final RecyclerView storiesList = (RecyclerView) findViewById(R.id.storiesList);
     storiesAdapter = new StoriesAdapter();
-    recyclerView.setAdapter(storiesAdapter);
-    actionsListener = new HomePresenter(new StoriesRepository());
+    storiesList.setAdapter(storiesAdapter);
+    actionsListener = new HomePresenter(new StoriesRepository(getSupportLoaderManager()));
   }
 
   @Override protected void onStart() {

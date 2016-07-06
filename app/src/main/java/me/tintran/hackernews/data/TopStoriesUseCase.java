@@ -1,4 +1,4 @@
-package me.tintran.hackernews.topstories;
+package me.tintran.hackernews.data;
 
 import java.util.List;
 
@@ -6,7 +6,7 @@ import java.util.List;
  * Created by tin on 7/6/16.
  */
 
-interface TopStoriesUseCase {
+public interface TopStoriesUseCase {
   void getTopStories(Callback callback);
 
   interface Callback {

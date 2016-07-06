@@ -3,6 +3,8 @@ package me.tintran.hackernews.topstories;
 import java.util.ArrayList;
 import java.util.List;
 import me.tintran.hackernews.R;
+import me.tintran.hackernews.data.Item;
+import me.tintran.hackernews.data.TopStoriesUseCase;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -40,11 +42,10 @@ public class HomePresenterTest {
   }
 
   @Test public void doShowItemsOnLoadSuccess() throws Exception {
-
     final List<Item> mockItems = new ArrayList<>(3);
-    mockItems.add(new Item("item1"));
-    mockItems.add(new Item("item2"));
-    mockItems.add(new Item("item3"));
+    mockItems.add(new Item("item1", subtitle));
+    mockItems.add(new Item("item2", subtitle));
+    mockItems.add(new Item("item3", subtitle));
 
     homePresenter.attachView(view);
     verify(topStoriesUseCase).getTopStories(callbackArgumentCaptor.capture());
@@ -60,6 +61,15 @@ public class HomePresenterTest {
       assertTrue(expectedItem == actualItem);
       assertEquals(expectedItem.title, actualItem.title);
     }
+  }
+
+  @Test public void doShowItemsOnLoadSuccessWithEmptyList() throws Exception {
+    final List<Item> mockItems = new ArrayList<>(3);
+    homePresenter.attachView(view);
+    verify(topStoriesUseCase).getTopStories(callbackArgumentCaptor.capture());
+    final TopStoriesUseCase.Callback capturedCallback = callbackArgumentCaptor.getValue();
+    capturedCallback.onComplete(mockItems);
+    verify(view).showStatusText(R.string.no_stories);
   }
 
 }

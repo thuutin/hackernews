@@ -6,14 +6,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import java.util.List;
 import me.tintran.hackernews.R;
+import me.tintran.hackernews.data.Item;
 
 /**
  * Created by tin on 7/6/16.
  */
 
-public class StoriesAdapter extends RecyclerView.Adapter<StoryViewHolder> {
+class StoriesAdapter extends RecyclerView.Adapter<StoryViewHolder> {
+
   private List<Item> itemList;
-  public StoriesAdapter() {
+
+  StoriesAdapter() {
   }
 
   @Override public StoryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -22,7 +25,9 @@ public class StoriesAdapter extends RecyclerView.Adapter<StoryViewHolder> {
   }
 
   @Override public void onBindViewHolder(StoryViewHolder holder, int position) {
-
+    final Item item = itemList.get(position);
+    holder.titleTextView.setText(item.title);
+    holder.subtitleTextView.setText(item.subtitle);
   }
 
   @Override public int getItemCount() {
@@ -32,7 +37,7 @@ public class StoriesAdapter extends RecyclerView.Adapter<StoryViewHolder> {
     return itemList.size();
   }
 
-  public void swapData(List<Item> itemsList) {
+  void swapData(List<Item> itemsList) {
     this.itemList = itemsList;
     notifyDataSetChanged();
   }
