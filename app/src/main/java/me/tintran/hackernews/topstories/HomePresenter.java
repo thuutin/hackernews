@@ -31,7 +31,7 @@ final class HomePresenter implements HomeContract.ActionsListener, TopStoriesUse
   }
 
   @Override public void onError(int code) {
-    final int stringRes = R.string.no_stories_found;
+    final int stringRes = R.string.no_stories;
     view.showStatusText(stringRes);
   }
 }
