@@ -15,7 +15,7 @@ import me.tintran.hackernews.StoriesRepository;
  */
 public class StoryDetailActivity extends AppCompatActivity implements StoryDetailContract.View {
 
-  private static final String STORY_ID = "storyId";
+  public static final String STORY_ID = "storyId";
   private CommentAdapter adapter;
   private StoryDetailContract.ActionsListener actionsListener;
   int storyId;

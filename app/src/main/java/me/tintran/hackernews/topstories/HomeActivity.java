@@ -61,6 +61,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
 
   @Override public void gotoStoryDetail(Story story) {
     Intent intent = new Intent(HomeActivity.this, StoryDetailActivity.class);
+    intent.putExtra(StoryDetailActivity.STORY_ID, story.id);
     startActivity(intent);
   }
 }

@@ -1,27 +1,34 @@
 package me.tintran.hackernews.storydetail;
 
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import java.util.List;
+import me.tintran.hackernews.R;
 
 /**
  * Created by tin on 7/7/16.
  */
-public class CommentAdapter extends RecyclerView.Adapter {
+public class CommentAdapter extends RecyclerView.Adapter<CommentItemViewHolder> {
 
-  @Override public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-    return null;
+  private List<Comment> comments;
+
+  @Override public CommentItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    return new CommentItemViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.comment_item, parent, false));
   }
 
-  @Override public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-    
+
+  @Override public void onBindViewHolder(CommentItemViewHolder holder, int position) {
+    Comment comment = comments.get(position);
+    holder.commentTextView.setText(comment.text);
   }
 
   @Override public int getItemCount() {
-    return 0;
+    return comments == null ? 0 : comments.size();
   }
 
   public void swapData(List<Comment> comments) {
-
+    this.comments = comments;
+    notifyDataSetChanged();
   }
 }
