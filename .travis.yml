@@ -4,10 +4,10 @@ android:
   components:
     - tools
     - platform-tools
-    - build-tools-24.0.0
-    - android-24
+    - build-tools-23.0.0
+    - android-23
     - extra-android-m2repository
 script: ./gradlew build
 
 notifications:
-  slack: codehere:jVcvzPcR8l219FndGLo6Lz8y
+  slack:  codehere:OEMILiJsIE1pyisvddcr9MCU
