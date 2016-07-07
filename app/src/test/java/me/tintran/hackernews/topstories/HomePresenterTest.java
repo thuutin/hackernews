@@ -33,9 +33,9 @@ public class HomePresenterTest {
   @Before public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
     homePresenter = new HomePresenter(topStoriesUseCase);
-    mockItems.add(new Item("item1", "subtitle 1"));
-    mockItems.add(new Item("item2", "subtitle 2"));
-    mockItems.add(new Item("item3", "subtitle 3"));
+    mockItems.add(new Item(1, "item1", "subtitle 1"));
+    mockItems.add(new Item(2, "item2", "subtitle 2"));
+    mockItems.add(new Item(3, "item3", "subtitle 3"));
   }
 
   @Test public void doShowItemsOnLoadError() throws Exception {
@@ -74,7 +74,7 @@ public class HomePresenterTest {
   }
 
   @Test public void clickOnItem_doMoveToDetailStory() throws Exception {
-    Item item = new Item("hello", "bye");
+    Item item = new Item(id, "hello", "bye");
     homePresenter.attachView(view);
     homePresenter.onStoryClicked(item);
     verify(view).gotoStoryDetail(itemCaptor.capture());

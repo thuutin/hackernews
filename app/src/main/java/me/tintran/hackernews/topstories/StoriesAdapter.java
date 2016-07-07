@@ -19,6 +19,7 @@ class StoriesAdapter extends RecyclerView.Adapter<StoryViewHolder> {
 
   StoriesAdapter(OnStoryClick onStoryClick) {
     this.onStoryClick = onStoryClick;
+    setHasStableIds(true);
   }
 
   @Override public StoryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -38,6 +39,10 @@ class StoriesAdapter extends RecyclerView.Adapter<StoryViewHolder> {
       return 0;
     }
     return itemList.size();
+  }
+
+  @Override public long getItemId(int position) {
+    return itemList.get(position).id;
   }
 
   void swapData(List<Item> itemsList) {

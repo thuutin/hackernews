@@ -19,6 +19,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
   private TextView statusText;
   private StoriesAdapter storiesAdapter;
   private HomeContract.ActionsListener actionsListener;
+  private RecyclerView storiesList;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -27,7 +28,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     setSupportActionBar(toolbar);
     statusText = (TextView) findViewById(R.id.statusTextView);
 
-    final RecyclerView storiesList = (RecyclerView) findViewById(R.id.storiesList);
+    this.storiesList = (RecyclerView) findViewById(R.id.storiesList);
     storiesAdapter = new StoriesAdapter(new StoriesAdapter.OnStoryClick() {
       @Override public void onClick(Item item) {
         actionsListener.onStoryClicked(item);
@@ -35,25 +36,23 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     });
     storiesList.setAdapter(storiesAdapter);
     actionsListener = new HomePresenter(new StoriesRepository(getSupportLoaderManager()));
-  }
-
-  @Override protected void onStart() {
-    super.onStart();
     actionsListener.attachView(this);
   }
 
-  @Override protected void onStop() {
-    super.onStop();
+  @Override protected void onDestroy() {
     actionsListener.detachView();
+    super.onDestroy();
   }
 
   @Override public void hideStatusText() {
     statusText.setVisibility(View.GONE);
+    storiesList.setVisibility(View.VISIBLE);
   }
 
   @Override public void showStatusText(@StringRes int statusRes) {
     statusText.setText(statusRes);
     statusText.setVisibility(View.VISIBLE);
+    storiesList.setVisibility(View.GONE);
   }
 
   @Override public void showItem(List<Item> itemsList) {
