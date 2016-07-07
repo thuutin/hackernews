@@ -1,5 +1,6 @@
 package me.tintran.hackernews;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.LoaderManager;
@@ -36,9 +37,11 @@ public class StoriesRepository implements TopStoriesUseCase, CommentListUseCase 
       new Comment(6, "Comment 6"),
       new Comment(7, "Comment 7")
   );
+  private Context context;
 
-  public StoriesRepository(LoaderManager loaderManager) {
+  public StoriesRepository(Context context) {
 
+    this.context = context;
   }
 
   @Override public void getCommentList(int storyId, final CommentListUseCase.Callback callback) {
