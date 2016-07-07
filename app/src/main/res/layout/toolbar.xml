@@ -8,4 +8,5 @@
     android:background="?colorPrimary"
     android:title="@string/app_name"
     tools:showIn="@layout/activity_home"
+    android:theme="@style/ToolbarOverlay"
     />
