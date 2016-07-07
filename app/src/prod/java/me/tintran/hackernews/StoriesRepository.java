@@ -22,13 +22,13 @@ public class StoriesRepository implements
     TopStoriesUseCase, CommentListUseCase {
 
   private LoaderManager loaderManager;
-  private Callback callback;
+  private TopStoriesUseCase.Callback callback;
 
   public StoriesRepository(LoaderManager loaderManager) {
     this.loaderManager = loaderManager;
   }
 
-  @Override public void getTopStories(final Callback callback) {
+  @Override public void getTopStories(final TopStoriesUseCase.Callback callback) {
     this.callback = callback;
     Retrofit retrofit = new Retrofit.Builder()
         .baseUrl("https://hacker-news.firebaseio.com/v0/")
