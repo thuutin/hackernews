@@ -2,4 +2,5 @@
   <string name="app_name">HackerNews</string>
   <string name="no_stories">No Stories found.</string>
   <string name="error_load_stories">Error loading Stories</string>
+  <string name="loading">Loading …</string>
 </resources>

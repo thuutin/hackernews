@@ -49,6 +49,7 @@ public class HomePresenterTest {
 
   @Test public void doShowItemsOnLoadSuccess() throws Exception {
     homePresenter.attachView(view);
+    verify(view).showStatusText(R.string.loading);
     verify(topStoriesUseCase).getTopStories(callbackArgumentCaptor.capture());
     final TopStoriesUseCase.Callback capturedCallback = callbackArgumentCaptor.getValue();
     capturedCallback.onComplete(mockItems);
@@ -83,6 +84,7 @@ public class HomePresenterTest {
 
   @Test public void noInteractionWithViewOnLoadErrorAfterOnDetach() throws Exception {
     homePresenter.attachView(view);
+    verify(view).showStatusText(R.string.loading);
     int anyCode = 1;
     verify(topStoriesUseCase).getTopStories(callbackArgumentCaptor.capture());
     homePresenter.detachView();
@@ -92,11 +94,10 @@ public class HomePresenterTest {
 
   @Test public void noInteractionWithViewOnLoadSuccessAfterOnDetach() throws Exception {
     homePresenter.attachView(view);
+    verify(view).showStatusText(R.string.loading);
     verify(topStoriesUseCase).getTopStories(callbackArgumentCaptor.capture());
     homePresenter.detachView();
     callbackArgumentCaptor.getValue().onComplete(mockItems);
     verifyNoMoreInteractions(view);
   }
-  
-  
 }

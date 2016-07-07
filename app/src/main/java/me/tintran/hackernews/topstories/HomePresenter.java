@@ -21,6 +21,7 @@ final class HomePresenter implements HomeContract.ActionsListener, TopStoriesUse
 
   @Override public void attachView(HomeContract.View view) {
     this.view = view;
+    view.showStatusText(R.string.loading);
     topStoriesUseCase.getTopStories(this);
   }
 
