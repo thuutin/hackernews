@@ -34,7 +34,7 @@ public class StoryDetailActivity extends AppCompatActivity implements StoryDetai
     final RecyclerView commentList = (RecyclerView) findViewById(R.id.commentList);
     adapter = new CommentAdapter();
     commentList.setAdapter(adapter);
-    actionsListener = new StoryDetailPresenter(storyId, new StoriesRepository(getSupportLoaderManager()));
+    actionsListener = new StoryDetailPresenter(storyId, new StoriesRepository(this));
   }
 
   @Override protected void onStart() {

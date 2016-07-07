@@ -23,6 +23,8 @@
           android:name="android.support.PARENT_ACTIVITY"
           android:value=".topstories.HomeActivity" />
     </activity>
+
+    <service android:name=".SyncService" />
   </application>
 
 </manifest>

@@ -22,13 +22,13 @@ public class SqliteDbHelper extends SQLiteOpenHelper {
           StoryContract.StoryColumns.COLUMN_NAME_SCORE + INT_TYPE + COMMA_SEP +
           StoryContract.StoryColumns.COLUMN_NAME_TIME + INT_TYPE + COMMA_SEP +
           StoryContract.StoryColumns.COLUMN_NAME_TYPE + TEXT_TYPE + COMMA_SEP +
-          StoryContract.StoryColumns.COLUMN_NAME_URL + TEXT_TYPE + COMMA_SEP +
+          StoryContract.StoryColumns.COLUMN_NAME_URL + TEXT_TYPE +
       " )";
 
   private static final String SQL_CREATE_TOP_STORIES =
       "CREATE TABLE " + TopStoriesContract.StoryColumns.TABLE_NAME + " (" +
           TopStoriesContract.StoryColumns._ID + " INTEGER PRIMARY KEY," +
-          TopStoriesContract.StoryColumns.STORYID + INT_TYPE + COMMA_SEP +
+          TopStoriesContract.StoryColumns.STORYID + INT_TYPE +
           " )";
 
   private static final int DATABASE_VERSION = 1;

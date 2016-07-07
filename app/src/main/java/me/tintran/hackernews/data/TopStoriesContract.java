@@ -8,8 +8,8 @@ import android.provider.BaseColumns;
 
 public class TopStoriesContract {
 
-  static abstract class StoryColumns implements BaseColumns {
-    static final String TABLE_NAME = "TopStories";
-    static final String STORYID = "storyId";
+  public static abstract class StoryColumns implements BaseColumns {
+    public static final String TABLE_NAME = "TopStories";
+    public static final String STORYID = "storyId";
   }
 }

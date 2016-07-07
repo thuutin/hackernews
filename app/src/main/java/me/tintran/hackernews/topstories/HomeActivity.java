@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.TextView;
 import java.util.List;
 import me.tintran.hackernews.R;
+import me.tintran.hackernews.SyncService;
 import me.tintran.hackernews.data.Story;
 import me.tintran.hackernews.StoriesRepository;
 import me.tintran.hackernews.storydetail.StoryDetailActivity;
@@ -35,8 +36,11 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
       }
     });
     storiesList.setAdapter(storiesAdapter);
-    actionsListener = new HomePresenter(new StoriesRepository(getSupportLoaderManager()));
+    actionsListener = new HomePresenter(new StoriesRepository(this));
     actionsListener.attachView(this);
+
+    Intent intent = new Intent(this, SyncService.class);
+    startService(intent);
   }
 
   @Override protected void onDestroy() {
