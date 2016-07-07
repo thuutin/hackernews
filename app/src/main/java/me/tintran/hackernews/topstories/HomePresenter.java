@@ -29,6 +29,9 @@ final class HomePresenter implements HomeContract.ActionsListener, TopStoriesUse
   }
 
   @Override public void onComplete(@NonNull List<Item> items) {
+    if (view == null){
+      return;
+    }
     if (items.size() == 0) {
       view.showStatusText(R.string.no_stories);
     } else {
@@ -38,6 +41,9 @@ final class HomePresenter implements HomeContract.ActionsListener, TopStoriesUse
   }
 
   @Override public void onError(int code) {
+    if (view == null){
+      return;
+    }
     final int stringRes = R.string.error_load_stories;
     view.showStatusText(stringRes);
   }
