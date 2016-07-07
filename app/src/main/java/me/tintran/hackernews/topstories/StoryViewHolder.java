@@ -3,9 +3,8 @@ package me.tintran.hackernews.topstories;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.TwoLineListItem;
 import me.tintran.hackernews.R;
-import me.tintran.hackernews.data.Item;
+import me.tintran.hackernews.data.Story;
 
 /**
  * Created by tin on 7/6/16.
@@ -13,7 +12,7 @@ import me.tintran.hackernews.data.Item;
 class StoryViewHolder extends RecyclerView.ViewHolder {
   public TextView titleTextView;
   public TextView subtitleTextView;
-  public Item item;
+  public Story story;
 
   public StoryViewHolder(View itemView, final StoriesAdapter.OnStoryClick onStoryClick) {
     super(itemView);
@@ -22,7 +21,7 @@ class StoryViewHolder extends RecyclerView.ViewHolder {
 
     itemView.setOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View v) {
-        onStoryClick.onClick(item);
+        onStoryClick.onClick(story);
       }
     });
   }

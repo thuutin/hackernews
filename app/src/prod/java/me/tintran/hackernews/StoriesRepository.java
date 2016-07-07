@@ -5,7 +5,7 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 import me.tintran.hackernews.data.HackerNewsApi;
-import me.tintran.hackernews.data.Item;
+import me.tintran.hackernews.data.Story;
 import me.tintran.hackernews.data.TopStoriesUseCase;
 import retrofit2.Call;
 import retrofit2.Response;
@@ -36,12 +36,12 @@ public class StoriesRepository implements
     Call<int[]> topStories = hackerNewsApi.getTopStories();
     topStories.enqueue(new retrofit2.Callback<int[]>() {
       @Override public void onResponse(Call<int[]> call, Response<int[]> response) {
-        List<Item> items = new ArrayList<>(response.body().length);
+        List<Story> stories = new ArrayList<>(response.body().length);
         for (int i = 0; i < response.body().length; i++) {
           final int itemId = response.body()[i];
-          items.add(new Item(itemId, String.valueOf(response.body()[i]), "Subtitle " + i));
+          stories.add(new Story(itemId, String.valueOf(response.body()[i]), "Subtitle " + i));
         }
-        callback.onComplete(items);
+        callback.onComplete(stories);
       }
 
       @Override public void onFailure(Call<int[]> call, Throwable t) {

@@ -10,7 +10,7 @@ import android.view.View;
 import android.widget.TextView;
 import java.util.List;
 import me.tintran.hackernews.R;
-import me.tintran.hackernews.data.Item;
+import me.tintran.hackernews.data.Story;
 import me.tintran.hackernews.StoriesRepository;
 import me.tintran.hackernews.storydetail.StoryDetailActivity;
 
@@ -30,8 +30,8 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
 
     this.storiesList = (RecyclerView) findViewById(R.id.storiesList);
     storiesAdapter = new StoriesAdapter(new StoriesAdapter.OnStoryClick() {
-      @Override public void onClick(Item item) {
-        actionsListener.onStoryClicked(item);
+      @Override public void onClick(Story story) {
+        actionsListener.onStoryClicked(story);
       }
     });
     storiesList.setAdapter(storiesAdapter);
@@ -55,11 +55,11 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     storiesList.setVisibility(View.GONE);
   }
 
-  @Override public void showItem(List<Item> itemsList) {
+  @Override public void showItem(List<Story> itemsList) {
     storiesAdapter.swapData(itemsList);
   }
 
-  @Override public void gotoStoryDetail(Item item) {
+  @Override public void gotoStoryDetail(Story story) {
     Intent intent = new Intent(HomeActivity.this, StoryDetailActivity.class);
     startActivity(intent);
   }

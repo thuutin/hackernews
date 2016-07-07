@@ -2,7 +2,7 @@ package me.tintran.hackernews.topstories;
 
 import android.support.annotation.StringRes;
 import java.util.List;
-import me.tintran.hackernews.data.Item;
+import me.tintran.hackernews.data.Story;
 
 /**
  * Created by tin on 7/6/16.
@@ -16,9 +16,9 @@ interface HomeContract {
 
     void showStatusText(@StringRes int statusRes);
 
-    void showItem(List<Item> itemsList);
+    void showItem(List<Story> itemsList);
 
-    void gotoStoryDetail(Item item);
+    void gotoStoryDetail(Story story);
   }
 
   interface ActionsListener {
@@ -28,7 +28,7 @@ interface HomeContract {
 
     void attachView(HomeContract.View view);
 
-    void onStoryClicked(Item item);
+    void onStoryClicked(Story story);
   }
 
 }

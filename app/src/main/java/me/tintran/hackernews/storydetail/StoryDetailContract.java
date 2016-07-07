@@ -2,7 +2,6 @@ package me.tintran.hackernews.storydetail;
 
 import android.support.annotation.StringRes;
 import java.util.List;
-import me.tintran.hackernews.data.Item;
 
 /**
  * Created by tin on 7/7/16.

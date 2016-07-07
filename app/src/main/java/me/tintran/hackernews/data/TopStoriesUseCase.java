@@ -10,7 +10,7 @@ public interface TopStoriesUseCase {
   void getTopStories(Callback callback);
 
   interface Callback {
-    void onComplete(List<Item> items);
+    void onComplete(List<Story> stories);
     void onError(int code);
   }
 }

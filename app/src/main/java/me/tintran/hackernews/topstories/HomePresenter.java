@@ -3,7 +3,7 @@ package me.tintran.hackernews.topstories;
 import android.support.annotation.NonNull;
 import java.util.List;
 import me.tintran.hackernews.R;
-import me.tintran.hackernews.data.Item;
+import me.tintran.hackernews.data.Story;
 import me.tintran.hackernews.data.TopStoriesUseCase;
 
 /**
@@ -29,14 +29,14 @@ final class HomePresenter implements HomeContract.ActionsListener, TopStoriesUse
     view = null;
   }
 
-  @Override public void onComplete(@NonNull List<Item> items) {
+  @Override public void onComplete(@NonNull List<Story> stories) {
     if (view == null){
       return;
     }
-    if (items.size() == 0) {
+    if (stories.size() == 0) {
       view.showStatusText(R.string.no_stories);
     } else {
-      view.showItem(items);
+      view.showItem(stories);
       view.hideStatusText();
     }
   }
@@ -49,7 +49,7 @@ final class HomePresenter implements HomeContract.ActionsListener, TopStoriesUse
     view.showStatusText(stringRes);
   }
 
-  @Override public void onStoryClicked(Item item) {
-    view.gotoStoryDetail(item);
+  @Override public void onStoryClicked(Story story) {
+    view.gotoStoryDetail(story);
   }
 }

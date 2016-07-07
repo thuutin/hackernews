@@ -6,7 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import java.util.List;
 import me.tintran.hackernews.R;
-import me.tintran.hackernews.data.Item;
+import me.tintran.hackernews.data.Story;
 
 /**
  * Created by tin on 7/6/16.
@@ -14,7 +14,7 @@ import me.tintran.hackernews.data.Item;
 
 class StoriesAdapter extends RecyclerView.Adapter<StoryViewHolder> {
 
-  private List<Item> itemList;
+  private List<Story> storyList;
   private OnStoryClick onStoryClick;
 
   StoriesAdapter(OnStoryClick onStoryClick) {
@@ -28,31 +28,31 @@ class StoriesAdapter extends RecyclerView.Adapter<StoryViewHolder> {
   }
 
   @Override public void onBindViewHolder(StoryViewHolder holder, int position) {
-    final Item item = itemList.get(position);
-    holder.titleTextView.setText(item.title);
-    holder.subtitleTextView.setText(item.subtitle);
-    holder.item = item;
+    final Story story = storyList.get(position);
+    holder.titleTextView.setText(story.title);
+    holder.subtitleTextView.setText(story.subtitle);
+    holder.story = story;
   }
 
   @Override public int getItemCount() {
-    if (itemList == null){
+    if (storyList == null){
       return 0;
     }
-    return itemList.size();
+    return storyList.size();
   }
 
   @Override public long getItemId(int position) {
-    return itemList.get(position).id;
+    return storyList.get(position).id;
   }
 
-  void swapData(List<Item> itemsList) {
-    this.itemList = itemsList;
+  void swapData(List<Story> itemsList) {
+    this.storyList = itemsList;
     notifyDataSetChanged();
   }
 
   interface OnStoryClick {
 
-    void onClick(Item item);
+    void onClick(Story story);
 
   }
 }
