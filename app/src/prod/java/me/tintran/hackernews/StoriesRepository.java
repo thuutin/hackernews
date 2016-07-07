@@ -82,9 +82,9 @@ public class StoriesRepository implements TopStoriesUseCase, CommentListUseCase 
         results.add(story);
       }
       query.close();
+      readableDatabase.close();
       return results;
     }
-
 
 
     @Override protected void onPostExecute(List<Story> stories) {

@@ -99,6 +99,7 @@ public class SyncService extends IntentService {
           new String[] { StoryContract.StoryColumns._ID }, StoryContract.StoryColumns._ID + " = ?",
           new String[] { String.valueOf(itemId) }, null, null, null, String.valueOf(1));
       if (itemInDatabase.getCount() != 0) {
+        itemInDatabase.close();
         continue;
       }
       itemInDatabase.close();
@@ -115,7 +116,8 @@ public class SyncService extends IntentService {
           contentvalues.put(StoryContract.StoryColumns.COLUMN_NAME_TIME, body.time);
           contentvalues.put(StoryContract.StoryColumns.COLUMN_NAME_TYPE, body.type);
           contentvalues.put(StoryContract.StoryColumns.COLUMN_NAME_URL, body.url);
-          writableDatabase.insertWithOnConflict(StoryContract.StoryColumns.TABLE_NAME, null, contentvalues, SQLiteDatabase.CONFLICT_REPLACE);
+          writableDatabase.insertWithOnConflict(StoryContract.StoryColumns.TABLE_NAME, null,
+              contentvalues, SQLiteDatabase.CONFLICT_REPLACE);
           callList.remove(call);
         }
 
@@ -136,5 +138,12 @@ public class SyncService extends IntentService {
     }
 
     Log.d(SyncService.class.getSimpleName(), "Hello + I am done");
+  }
+
+  @Override public void onDestroy() {
+    if (writableDatabase != null && writableDatabase.isOpen()) {
+      writableDatabase.close();
+    }
+    super.onDestroy();
   }
 }
