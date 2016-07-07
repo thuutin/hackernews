@@ -9,13 +9,7 @@
     android:orientation="vertical"
     tools:context="me.tintran.hackernews.topstories.HomeActivity"
     >
-  <android.support.v7.widget.Toolbar
-      android:id="@+id/toolbar"
-      android:layout_width="match_parent"
-      android:layout_height="?actionBarSize"
-      android:background="?colorPrimary"
-      android:title="@string/app_name"
-      />
+  <include layout="@layout/toolbar"/>
 
   <TextView
       android:id="@+id/statusTextView"

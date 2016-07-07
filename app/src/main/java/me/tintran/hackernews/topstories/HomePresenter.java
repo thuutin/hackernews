@@ -41,4 +41,8 @@ final class HomePresenter implements HomeContract.ActionsListener, TopStoriesUse
     final int stringRes = R.string.error_load_stories;
     view.showStatusText(stringRes);
   }
+
+  @Override public void onStoryClicked(Item item) {
+    view.gotoStoryDetail(item);
+  }
 }

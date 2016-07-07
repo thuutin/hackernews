@@ -17,6 +17,8 @@ interface HomeContract {
     void showStatusText(@StringRes int statusRes);
 
     void showItem(List<Item> itemsList);
+
+    void gotoStoryDetail(Item item);
   }
 
   interface ActionsListener {
@@ -25,6 +27,8 @@ interface HomeContract {
     void detachView();
 
     void attachView(HomeContract.View view);
+
+    void onStoryClicked(Item item);
   }
 
 }
