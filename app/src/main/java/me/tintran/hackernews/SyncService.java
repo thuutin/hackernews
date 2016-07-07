@@ -4,13 +4,16 @@ import android.app.IntentService;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -33,6 +36,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class SyncService extends IntentService {
 
   private SQLiteDatabase writableDatabase;
+  private Handler handler;
 
   public SyncService() {
     super(SyncService.class.getSimpleName());
@@ -42,6 +46,7 @@ public class SyncService extends IntentService {
     super.onCreate();
     SqliteDbHelper sqliteDbHelper = new SqliteDbHelper(this);
     writableDatabase = sqliteDbHelper.getWritableDatabase();
+    handler = new Handler();
   }
 
   @Override protected void onHandleIntent(Intent intent) {
@@ -49,7 +54,6 @@ public class SyncService extends IntentService {
     GsonConverterFactory factory = GsonConverterFactory.create();
     Retrofit retrofit = new Retrofit.Builder().baseUrl("https://hacker-news.firebaseio.com/v0/")
         .callbackExecutor(new Executor() {
-          Handler handler = new Handler();
           @Override public void execute(@NonNull Runnable command) {
             handler.post(command);
           }
@@ -65,7 +69,7 @@ public class SyncService extends IntentService {
       e.printStackTrace();
     }
 
-    if (body == null){
+    if (body == null) {
       return;
     }
 
@@ -87,11 +91,19 @@ public class SyncService extends IntentService {
     } finally {
       writableDatabase.endTransaction();
     }
-    final int totalCalls = body.length;
-    final AtomicInteger integer = new AtomicInteger(0);
+
+    final List<Call<StoryItem>> callList = new LinkedList<>();
     // Retrieve and insert the stories
     for (final int itemId : body) {
+      Cursor itemInDatabase = writableDatabase.query(StoryContract.StoryColumns.TABLE_NAME,
+          new String[] { StoryContract.StoryColumns._ID }, StoryContract.StoryColumns._ID + " = ?",
+          new String[] { String.valueOf(itemId) }, null, null, null, String.valueOf(1));
+      if (itemInDatabase.getCount() != 0) {
+        continue;
+      }
+      itemInDatabase.close();
       Call<StoryItem> storyItemCall = hackerNewsApi.getStory(itemId);
+      callList.add(storyItemCall);
       storyItemCall.enqueue(new Callback<StoryItem>() {
         @Override public void onResponse(Call<StoryItem> call, Response<StoryItem> response) {
           StoryItem body = response.body();
@@ -103,26 +115,26 @@ public class SyncService extends IntentService {
           contentvalues.put(StoryContract.StoryColumns.COLUMN_NAME_TIME, body.time);
           contentvalues.put(StoryContract.StoryColumns.COLUMN_NAME_TYPE, body.type);
           contentvalues.put(StoryContract.StoryColumns.COLUMN_NAME_URL, body.url);
-          writableDatabase.insert(StoryContract.StoryColumns.TABLE_NAME, null, contentvalues);
-          integer.incrementAndGet();
+          writableDatabase.insertWithOnConflict(StoryContract.StoryColumns.TABLE_NAME, null, contentvalues, SQLiteDatabase.CONFLICT_REPLACE);
+          callList.remove(call);
         }
 
         @Override public void onFailure(Call<StoryItem> call, Throwable t) {
           Log.d("StoriesRepository",
               "Failure getting story id " + String.valueOf(itemId) + t.getMessage());
-          integer.incrementAndGet();
+          callList.remove(call);
         }
       });
     }
 
-    while (totalCalls != integer.get()){
+    while (!callList.isEmpty()) {
       try {
         Thread.sleep(50);
       } catch (InterruptedException e) {
         e.printStackTrace();
       }
     }
-    stopSelf();
-  }
 
+    Log.d(SyncService.class.getSimpleName(), "Hello + I am done");
+  }
 }
