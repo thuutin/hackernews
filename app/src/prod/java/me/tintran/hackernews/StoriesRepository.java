@@ -10,6 +10,8 @@ import me.tintran.hackernews.data.TopStoriesUseCase;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+import me.tintran.hackernews.data.CommentListUseCase;
+
 import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
