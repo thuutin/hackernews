@@ -27,6 +27,7 @@ public class HomePresenterTest {
 
   @Captor ArgumentCaptor<TopStoriesUseCase.Callback> callbackArgumentCaptor;
   @Captor ArgumentCaptor<List<Item>> listArgumentCaptor;
+  @Captor ArgumentCaptor<Item> itemCaptor;
   @Before public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
     homePresenter = new HomePresenter(topStoriesUseCase);
@@ -38,14 +39,14 @@ public class HomePresenterTest {
     final TopStoriesUseCase.Callback capturedCallback = callbackArgumentCaptor.getValue();
     int fakeErrorCode = 1001;
     capturedCallback.onError(fakeErrorCode);
-    verify(view).showStatusText(R.string.no_stories);
+    verify(view).showStatusText(R.string.error_load_stories);
   }
 
   @Test public void doShowItemsOnLoadSuccess() throws Exception {
     final List<Item> mockItems = new ArrayList<>(3);
-    mockItems.add(new Item("item1", subtitle));
-    mockItems.add(new Item("item2", subtitle));
-    mockItems.add(new Item("item3", subtitle));
+    mockItems.add(new Item("item1", "subtitle 1"));
+    mockItems.add(new Item("item2", "subtitle 2"));
+    mockItems.add(new Item("item3", "subtitle 3"));
 
     homePresenter.attachView(view);
     verify(topStoriesUseCase).getTopStories(callbackArgumentCaptor.capture());
@@ -72,4 +73,13 @@ public class HomePresenterTest {
     verify(view).showStatusText(R.string.no_stories);
   }
 
+  @Test public void clickOnItem_doMoveToDetailStory() throws Exception {
+    Item item = new Item("hello", "bye");
+    homePresenter.attachView(view);
+    homePresenter.onStoryClicked(item);
+    verify(view).gotoStoryDetail(itemCaptor.capture());
+    final Item actualItem = itemCaptor.getValue();
+    assertTrue(item == actualItem);
+
+  }
 }
