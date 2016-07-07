@@ -74,7 +74,7 @@ public class HomePresenterTest {
   }
 
   @Test public void clickOnItem_doMoveToDetailStory() throws Exception {
-    Story story = new Story(id, "hello", "bye");
+    Story story = new Story(1, "hello", "bye");
     homePresenter.attachView(view);
     homePresenter.onStoryClicked(story);
     verify(view).gotoStoryDetail(itemCaptor.capture());
