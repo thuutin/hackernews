@@ -17,7 +17,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 
 public class StoriesRepository implements
-    TopStoriesUseCase {
+    TopStoriesUseCase, CommentListUseCase {
 
   private LoaderManager loaderManager;
   private Callback callback;
@@ -48,6 +48,10 @@ public class StoriesRepository implements
         Log.d("StoriesRepository" , "Failure " + t.getMessage());
       }
     });
+  }
+
+
+  @Override public void getCommentList(int storyId, final CommentListUseCase.Callback callback) {
   }
 
 }
