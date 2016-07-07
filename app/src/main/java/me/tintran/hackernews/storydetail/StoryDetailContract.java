@@ -15,7 +15,7 @@ public interface StoryDetailContract {
 
     void showStatusText(@StringRes int statusRes);
 
-    void showItem(List<Comment> comments);
+    void showCommentList(List<Comment> comments);
 
   }
 

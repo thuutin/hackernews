@@ -7,6 +7,7 @@ import java.util.List;
  */
 
 public interface TopStoriesUseCase {
+
   void getTopStories(Callback callback);
 
   interface Callback {
