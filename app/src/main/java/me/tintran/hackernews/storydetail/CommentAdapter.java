@@ -1,6 +1,7 @@
 package me.tintran.hackernews.storydetail;
 
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import java.util.List;
@@ -20,7 +21,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentItemViewHolder> 
 
   @Override public void onBindViewHolder(CommentItemViewHolder holder, int position) {
     Comment comment = comments.get(position);
-    holder.commentTextView.setText(comment.text);
+    holder.commentTextView.setText(comment.spanned);
   }
 
   @Override public int getItemCount() {

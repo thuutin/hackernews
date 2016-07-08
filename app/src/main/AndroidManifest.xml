@@ -25,6 +25,7 @@
     </activity>
 
     <service android:name=".SyncService" />
+    <service android:name=".CommentDownloadService" />
   </application>
 
 </manifest>

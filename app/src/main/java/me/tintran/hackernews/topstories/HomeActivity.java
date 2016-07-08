@@ -40,7 +40,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     actionsListener.attachView(this);
 
     Intent intent = new Intent(this, SyncService.class);
-    startService(intent);
+    //startService(intent);
   }
 
   @Override protected void onDestroy() {

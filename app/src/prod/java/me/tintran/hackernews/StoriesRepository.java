@@ -42,7 +42,9 @@ public class StoriesRepository implements TopStoriesUseCase, CommentListUseCase 
   }
 
   @Override public void getCommentList(int storyId, final CommentListUseCase.Callback callback) {
-
+    GetCommentListAsyncTask getCommentListAsyncTask =
+        new GetCommentListAsyncTask(context, callback);
+    getCommentListAsyncTask.execute(storyId);
   }
 
   public static class GetTopStoriesAsyncTask extends AsyncTask<Void, Void, List<Story>> {
@@ -76,16 +78,15 @@ public class StoriesRepository implements TopStoriesUseCase, CommentListUseCase 
       List<Story> results = new ArrayList<>(size);
       for (int i = 0; i < size; i++) {
         query.moveToPosition(i);
-        Story story = new Story(query.getInt(query.getColumnIndex(StoryContract.StoryColumns._ID)),
+        Story story = new Story(query.getInt(query.getColumnIndex(TopStoriesContract.StoryColumns.STORYID)),
             query.getString(query.getColumnIndex(StoryContract.StoryColumns.COLUMN_NAME_TITLE)),
-            query.getString(query.getColumnIndex(StoryContract.StoryColumns._ID)));
+            query.getString(query.getColumnIndex(TopStoriesContract.StoryColumns.STORYID)));
         results.add(story);
       }
       query.close();
       readableDatabase.close();
       return results;
     }
-
 
     @Override protected void onPostExecute(List<Story> stories) {
       if (context.get() == null || callback.get() == null) {

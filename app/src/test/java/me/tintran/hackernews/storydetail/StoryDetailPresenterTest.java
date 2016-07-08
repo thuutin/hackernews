@@ -32,7 +32,7 @@ public class StoryDetailPresenterTest {
   StoryDetailContract.ActionsListener actionsListener;
   private int storyId;
 
-  List<Comment> mockCommentList;
+  private List<Comment> mockCommentList;
 
   @Before public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
@@ -60,6 +60,4 @@ public class StoryDetailPresenterTest {
       assertEquals(actual.id, expected.id);
     }
   }
-
-
 }

@@ -19,7 +19,6 @@ class StoriesAdapter extends RecyclerView.Adapter<StoryViewHolder> {
 
   StoriesAdapter(OnStoryClick onStoryClick) {
     this.onStoryClick = onStoryClick;
-    setHasStableIds(true);
   }
 
   @Override public StoryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {

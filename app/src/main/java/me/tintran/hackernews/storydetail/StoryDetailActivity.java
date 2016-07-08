@@ -1,5 +1,6 @@
 package me.tintran.hackernews.storydetail;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -7,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import java.util.List;
+import me.tintran.hackernews.CommentDownloadService;
 import me.tintran.hackernews.R;
 import me.tintran.hackernews.StoriesRepository;
 
@@ -33,8 +35,12 @@ public class StoryDetailActivity extends AppCompatActivity implements StoryDetai
 
     final RecyclerView commentList = (RecyclerView) findViewById(R.id.commentList);
     adapter = new CommentAdapter();
+    adapter.setHasStableIds(true);
     commentList.setAdapter(adapter);
     actionsListener = new StoryDetailPresenter(storyId, new StoriesRepository(this));
+    Intent intent = new Intent(this, CommentDownloadService.class);
+    intent.putExtra(CommentDownloadService.STORY_ID, storyId);
+    startService(intent);
   }
 
   @Override protected void onStart() {
