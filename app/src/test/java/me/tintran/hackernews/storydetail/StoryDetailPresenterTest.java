@@ -45,7 +45,7 @@ public class StoryDetailPresenterTest {
     actionsListener = new StoryDetailPresenter(storyId, commentListUseCase);
   }
 
-  @Test public void attachView() throws Exception {
+  @Test public void doShowListCommentsOnLoadSuccess() throws Exception {
     actionsListener.attachView(view);
     verify(view).showStatusText(R.string.loading);
     verify(commentListUseCase).getCommentList(eq(storyId), callbackArgumentCaptor.capture());
@@ -60,4 +60,6 @@ public class StoryDetailPresenterTest {
       assertEquals(actual.id, expected.id);
     }
   }
+
+
 }

@@ -37,6 +37,7 @@ public class SyncService extends IntentService {
 
   private SQLiteDatabase writableDatabase;
   private Handler handler;
+  private static final String baseUrl = "https://hacker-news.firebaseio.com/v0/";
 
   public SyncService() {
     super(SyncService.class.getSimpleName());
@@ -52,7 +53,8 @@ public class SyncService extends IntentService {
   @Override protected void onHandleIntent(Intent intent) {
 
     GsonConverterFactory factory = GsonConverterFactory.create();
-    Retrofit retrofit = new Retrofit.Builder().baseUrl("https://hacker-news.firebaseio.com/v0/")
+    Retrofit retrofit = new Retrofit.Builder()
+        .baseUrl(baseUrl)
         .callbackExecutor(new Executor() {
           @Override public void execute(@NonNull Runnable command) {
             handler.post(command);

@@ -18,7 +18,7 @@ public class StoryDetailActivity extends AppCompatActivity implements StoryDetai
   public static final String STORY_ID = "storyId";
   private CommentAdapter adapter;
   private StoryDetailContract.ActionsListener actionsListener;
-  int storyId;
+  private int storyId;
 
   @Override protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
