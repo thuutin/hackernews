@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
+import android.text.Html;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +57,7 @@ public class GetCommentListAsyncTask extends AsyncTask<Integer, Void, List<Comme
       final int commentId = query.getInt(query.getColumnIndex(CommentContract.CommentColumns._ID));
       final String commentText =
           query.getString(query.getColumnIndex(CommentContract.CommentColumns.COLUMN_NAME_TEXT));
-      Comment comment = new Comment(commentId, commentText);
+      Comment comment = new Comment(commentId, Html.fromHtml(commentText).toString());
       comments.add(comment);
     }
     query.close();

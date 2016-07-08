@@ -9,13 +9,9 @@ import android.text.Spanned;
 public final class Comment {
   public final int id;
   public final String text;
-  public Spanned spanned;
 
   public Comment(int id, String text) {
     this.id = id;
     this.text = text;
-    if (text != null) {
-      this.spanned = Html.fromHtml(text);
-    }
   }
 }
