@@ -23,7 +23,7 @@ interface StoryGateway {
     public void insertStory(int id, String title, int decendants, int score, long time, String type,
         String url) {
       final ContentValues contentvalues = new ContentValues();
-      contentvalues.put(StoryContract.StoryColumns.COLUMN_NAME_TITLE, time);
+      contentvalues.put(StoryContract.StoryColumns.COLUMN_NAME_TITLE, title);
       contentvalues.put(StoryContract.StoryColumns._ID, id);
       contentvalues.put(StoryContract.StoryColumns.COLUMN_NAME_DESCENDANTS, decendants);
       contentvalues.put(StoryContract.StoryColumns.COLUMN_NAME_SCORE, score);

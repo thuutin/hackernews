@@ -5,4 +5,7 @@ package me.tintran.hackernews;
  */
 
 public class RestHelper {
+
+
+
 }
