@@ -12,6 +12,8 @@ public interface HackerNewsApi {
   interface Stories {
     @GET(value = "topstories.json") Call<int[]> getTopStories();
     @GET(value = "item/{id}.json") Call<StoryItem> getStory(@Path("id") int storyId);
+    //https://hacker-news.firebaseio.com/v0/updates/items.json
+    @GET(value = "updates/items.json") Call<int[]> getUpdatedStories();
   }
 
   interface Comments {

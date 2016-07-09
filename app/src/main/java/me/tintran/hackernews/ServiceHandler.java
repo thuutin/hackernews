@@ -11,8 +11,11 @@ import android.support.annotation.WorkerThread;
 import android.util.Log;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import me.tintran.hackernews.data.CommentContract;
+import me.tintran.hackernews.data.CommentContract.CommentColumns;
 import me.tintran.hackernews.data.HackerNewsApi;
 import me.tintran.hackernews.data.StoryCommentContract;
 import retrofit2.Call;
@@ -36,8 +39,7 @@ public final class ServiceHandler extends Handler {
   private List<Call> callList = new ArrayList<>();
 
   ServiceHandler(Looper looper, SQLiteOpenHelper sqLiteOpenHelper, HackerNewsApi.Stories storiesApi,
-      HackerNewsApi.Comments commentsApi,
-      StopListener stopListener) {
+      HackerNewsApi.Comments commentsApi, StopListener stopListener) {
     super(looper);
     this.sqLiteOpenHelper = sqLiteOpenHelper;
     this.storiesApi = storiesApi;
@@ -64,8 +66,17 @@ public final class ServiceHandler extends Handler {
         TopStoryGateway topStoryGateway = new TopStoryGateway.SQLiteTopStoryGateway(sqLiteDatabase);
         topStoryGateway.replaceTopStoryIds(topStoryIds);
 
+        Call<int[]> updatedStoriesCall = storiesApi.getUpdatedStories();
+        int[] updatedStories = null;
+        try {
+          updatedStories = updatedStoriesCall.execute().body();
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+        final int[] storyIdsToRetrieve = getIntersection(updatedStories, topStoryIds);
+
         // Retrieve and insert the stories
-        for (final int itemId : topStoryIds) {
+        for (final int itemId : storyIdsToRetrieve) {
           final Call<HackerNewsApi.StoryItem> storyItemCall = storiesApi.getStory(itemId);
           final StoryGateway storyGateway = new StoryGateway.SqliteStoryGateway(sqLiteDatabase);
           StoryCommentGateway.SQLiteStoryCommentGateway storyCommentGateway =
@@ -102,17 +113,16 @@ public final class ServiceHandler extends Handler {
                 Response<HackerNewsApi.CommentItem> response) {
               HackerNewsApi.CommentItem commentItem = response.body();
               ContentValues contentValues = new ContentValues();
-              contentValues.put(CommentContract.CommentColumns.COLUMN_NAME_BY, commentItem.by);
-              contentValues.put(CommentContract.CommentColumns._ID, commentItem.id);
-              contentValues.put(CommentContract.CommentColumns.COLUMN_NAME_PARENT,
-                  commentItem.parent);
-              contentValues.put(CommentContract.CommentColumns.COLUMN_NAME_TEXT, commentItem.text);
-              contentValues.put(CommentContract.CommentColumns.COLUMN_NAME_TIME, commentItem.time);
-              contentValues.put(CommentContract.CommentColumns.COLUMN_NAME_TYPE, commentItem.type);
-              contentValues.put(CommentContract.CommentColumns.COLUMN_NAME_TYPE, commentItem.type);
+              contentValues.put(CommentColumns.COLUMN_NAME_BY, commentItem.by);
+              contentValues.put(CommentColumns._ID, commentItem.id);
+              contentValues.put(CommentColumns.COLUMN_NAME_PARENT, commentItem.parent);
+              contentValues.put(CommentColumns.COLUMN_NAME_TEXT, commentItem.text);
+              contentValues.put(CommentColumns.COLUMN_NAME_TIME, commentItem.time);
+              contentValues.put(CommentColumns.COLUMN_NAME_TYPE, commentItem.type);
+              contentValues.put(CommentColumns.COLUMN_NAME_TYPE, commentItem.type);
 
-              sqLiteDatabase.insertWithOnConflict(CommentContract.CommentColumns.TABLE_NAME, null,
-                  contentValues, SQLiteDatabase.CONFLICT_REPLACE);
+              sqLiteDatabase.insertWithOnConflict(CommentColumns.TABLE_NAME, null, contentValues,
+                  SQLiteDatabase.CONFLICT_REPLACE);
               callList.remove(call);
               Log.d("CommentDownloadService", "Done loading comment" + commentId);
               stopServiceIfNeeded();
@@ -131,6 +141,22 @@ public final class ServiceHandler extends Handler {
       default:
         throw new UnsupportedOperationException();
     }
+  }
+
+  private static int[] getIntersection(int[] updatedStories, int[] topStoryIds) {
+    List<Integer> integers = new ArrayList<>();
+    for (int updatedStory : updatedStories) {
+      for (int topStoryId : topStoryIds) {
+        if (topStoryId == updatedStory) {
+          integers.add(updatedStory);
+        }
+      }
+    }
+    int[] results = new int[integers.size()];
+    for (int i = 0; i < integers.size(); i++) {
+      results[i] = integers.get(i);
+    }
+    return results;
   }
 
   private void stopServiceIfNeeded() {

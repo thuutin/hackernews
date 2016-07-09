@@ -44,12 +44,9 @@ public class SyncService extends Service {
         "Start Handler Thread " + handlerThread.getId() + "  " + toString());
     Looper looper = handlerThread.getLooper();
     SQLiteDbHelper sqliteDbHelper = new SQLiteDbHelper(SyncService.this);
-    serviceHandler = new ServiceHandler(
-        looper,
-        sqliteDbHelper,
-        getHackerNewsApi(HackerNewsApi.Stories.class),
-        getHackerNewsApi(HackerNewsApi.Comments.class),
-        new StopListener() {
+    serviceHandler =
+        new ServiceHandler(looper, sqliteDbHelper, getHackerNewsApi(HackerNewsApi.Stories.class),
+            getHackerNewsApi(HackerNewsApi.Comments.class), new StopListener() {
           @Override public void notifyStop() {
             stopSelf();
           }
@@ -58,26 +55,32 @@ public class SyncService extends Service {
 
   @Override public int onStartCommand(Intent intent, int flags, int startId) {
     String action = intent.getAction();
-    Message message = serviceHandler.obtainMessage();
 
     switch (action) {
       case UPDATE_TOP_STORIES: {
-        message.what = ServiceHandler.DOWNLOAD_TOP_STORIES;
+        if (!serviceHandler.hasMessages(ServiceHandler.DOWNLOAD_TOP_STORIES)) {
+          Message message = serviceHandler.obtainMessage();
+          message.what = ServiceHandler.DOWNLOAD_TOP_STORIES;
+          serviceHandler.sendMessage(message);
+        }
         break;
       }
+
       case DOWNLOAD_COMMENT_FOR_STORY: {
         final int storyId = intent.getIntExtra(STORY_ID, -1);
         if (storyId == -1) {
           throw new IllegalStateException("Can not handle this intent");
         }
+        Message message = serviceHandler.obtainMessage();
         message.what = ServiceHandler.DOWNLOAD_COMMENT_FOR_STORY;
         message.obj = String.valueOf(storyId);
+        serviceHandler.sendMessage(message);
         break;
       }
       default:
         throw new UnsupportedOperationException();
     }
-    serviceHandler.sendMessage(message);
+
     return START_NOT_STICKY;
   }
 

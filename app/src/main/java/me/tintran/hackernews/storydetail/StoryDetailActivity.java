@@ -18,6 +18,7 @@ import me.tintran.hackernews.SyncService;
 public class StoryDetailActivity extends AppCompatActivity implements StoryDetailContract.View {
 
   public static final String STORY_ID = "storyId";
+  public static final String STORY_TITLE = "StoryTitle";
   private CommentAdapter adapter;
   private StoryDetailContract.ActionsListener actionsListener;
   private int storyId;
@@ -28,11 +29,12 @@ public class StoryDetailActivity extends AppCompatActivity implements StoryDetai
     if (!getIntent().hasExtra(STORY_ID)){
       throw new IllegalStateException("Did not find StoryId in intent extras");
     }
+    final String storyTitle = getIntent().getStringExtra(STORY_TITLE);
     storyId = getIntent().getIntExtra(STORY_ID, -1);
     Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
     setSupportActionBar(toolbar);
     getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
+    getSupportActionBar().setTitle(storyTitle);
     final RecyclerView commentList = (RecyclerView) findViewById(R.id.commentList);
     adapter = new CommentAdapter();
     adapter.setHasStableIds(true);
