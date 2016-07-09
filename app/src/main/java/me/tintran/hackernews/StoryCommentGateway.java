@@ -21,8 +21,7 @@ public interface StoryCommentGateway {
     }
 
     @Override public void insert(int storyId, int[] commentIds) {
-
-      if (commentIds == null || commentIds.length == 0){
+      if (commentIds == null || commentIds.length == 0) {
         return;
       }
       ContentValues contentValues = new ContentValues();
@@ -31,7 +30,8 @@ public interface StoryCommentGateway {
       } else {
         sqLiteDatabase.beginTransaction();
       }
-      Log.d(SQLiteStoryCommentGateway.class.getSimpleName(), "In Transaction" + " thread " + Thread.currentThread().getId());
+      Log.d(SQLiteStoryCommentGateway.class.getSimpleName(),
+          "In Transaction" + " thread " + Thread.currentThread().getId());
       try {
         contentValues.put(StoryCommentContract.StoryCommentColumns.COLUMN_NAME_STORYID, storyId);
         for (int i = 0; i < commentIds.length; i++) {
@@ -43,7 +43,8 @@ public interface StoryCommentGateway {
         sqLiteDatabase.setTransactionSuccessful();
       } finally {
         sqLiteDatabase.endTransaction();
-        Log.d(SQLiteStoryCommentGateway.class.getSimpleName(), "Out Transaction" + " thread " + Thread.currentThread().getId());
+        Log.d(SQLiteStoryCommentGateway.class.getSimpleName(),
+            "Out Transaction" + " thread " + Thread.currentThread().getId());
       }
     }
   }
