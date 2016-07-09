@@ -22,6 +22,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
  */
 
 public class SyncService extends Service {
+  public static final String UPDATE_TOP_STORIES = "UPDATE_TOP_STORIES";
+  public static final String DOWNLOAD_COMMENT_FOR_STORY = "DOWNLOAD_COMMENT_FOR_STORY";
+
+  public static final String STORY_ID = "storyId";
 
   private Handler serviceHandler;
 
@@ -36,19 +40,39 @@ public class SyncService extends Service {
     HandlerThread handlerThread =
         new HandlerThread(SyncService.class.getSimpleName(), Process.THREAD_PRIORITY_BACKGROUND);
     handlerThread.start();
-    Log.d(SyncService.class.getSimpleName(), "Start Handler Thread " + handlerThread.getId() + "  " + toString());
+    Log.d(SyncService.class.getSimpleName(),
+        "Start Handler Thread " + handlerThread.getId() + "  " + toString());
     Looper looper = handlerThread.getLooper();
     SQLiteDbHelper sqliteDbHelper = new SQLiteDbHelper(SyncService.this);
-    serviceHandler = new ServiceHandler(looper, sqliteDbHelper, getHackerNewsApi(), new StopListener() {
-      @Override public void notifyStop() {
-        stopSelf();
-      }
-    });
+    serviceHandler =
+        new ServiceHandler(looper, sqliteDbHelper, getHackerNewsApi(), new StopListener() {
+          @Override public void notifyStop() {
+            stopSelf();
+          }
+        });
   }
 
   @Override public int onStartCommand(Intent intent, int flags, int startId) {
+    String action = intent.getAction();
     Message message = serviceHandler.obtainMessage();
-    message.what = ServiceHandler.DOWNLOAD_TOP_STORIES;
+
+    switch (action) {
+      case UPDATE_TOP_STORIES: {
+        message.what = ServiceHandler.DOWNLOAD_TOP_STORIES;
+        break;
+      }
+      case DOWNLOAD_COMMENT_FOR_STORY: {
+        final int storyId = intent.getIntExtra(STORY_ID, -1);
+        if (storyId == -1) {
+          throw new IllegalStateException("Can not handle this intent");
+        }
+        message.what = ServiceHandler.DOWNLOAD_COMMENT_FOR_STORY;
+        message.obj = String.valueOf(storyId);
+        break;
+      }
+      default:
+        throw new UnsupportedOperationException();
+    }
     serviceHandler.sendMessage(message);
     return START_NOT_STICKY;
   }

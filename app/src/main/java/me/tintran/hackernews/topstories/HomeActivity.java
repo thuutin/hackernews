@@ -40,6 +40,7 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     actionsListener.attachView(this);
 
     Intent intent = new Intent(this, SyncService.class);
+    intent.setAction(SyncService.UPDATE_TOP_STORIES);
     startService(intent);
   }
 

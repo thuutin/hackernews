@@ -8,9 +8,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import java.util.List;
-import me.tintran.hackernews.CommentDownloadService;
 import me.tintran.hackernews.R;
 import me.tintran.hackernews.StoriesRepository;
+import me.tintran.hackernews.SyncService;
 
 /**
  * Created by tin on 7/7/16.
@@ -38,8 +38,9 @@ public class StoryDetailActivity extends AppCompatActivity implements StoryDetai
     adapter.setHasStableIds(true);
     commentList.setAdapter(adapter);
     actionsListener = new StoryDetailPresenter(storyId, new StoriesRepository(this));
-    Intent intent = new Intent(this, CommentDownloadService.class);
-    intent.putExtra(CommentDownloadService.STORY_ID, storyId);
+    Intent intent = new Intent(this, SyncService.class);
+    intent.setAction(SyncService.DOWNLOAD_COMMENT_FOR_STORY);
+    intent.putExtra(SyncService.STORY_ID, storyId);
     startService(intent);
   }
 
