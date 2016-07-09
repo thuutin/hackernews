@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  * Created by tin on 7/7/16.
  */
 
-public class SqliteDbHelper extends SQLiteOpenHelper {
+public class SQLiteDbHelper extends SQLiteOpenHelper {
 
   private static final String TEXT_TYPE = " TEXT";
   private static final String INT_TYPE = " INTEGER";
@@ -52,7 +52,7 @@ public class SqliteDbHelper extends SQLiteOpenHelper {
   private static final int DATABASE_VERSION = 1;
   private static final String DATABASE_NAME = "HackerNews.db";
 
-  public SqliteDbHelper(Context context) {
+  public SQLiteDbHelper(Context context) {
     super(context, DATABASE_NAME, null, DATABASE_VERSION);
   }
 

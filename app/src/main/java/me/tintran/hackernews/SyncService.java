@@ -7,23 +7,18 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Looper;
-import android.os.Message;
 import android.os.Process;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.concurrent.Executor;
-import me.tintran.hackernews.StoryCommentGateway.SqliteStoryCommentGateway;
+import me.tintran.hackernews.StoryCommentGateway.SQLiteStoryCommentGateway;
 import me.tintran.hackernews.StoryGateway.SqliteStoryGateway;
 import me.tintran.hackernews.data.HackerNewsApi;
 import me.tintran.hackernews.data.HackerNewsApi.StoryItem;
-import me.tintran.hackernews.data.SqliteDbHelper;
+import me.tintran.hackernews.data.SQLiteDbHelper;
 import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -55,8 +50,8 @@ public class SyncService extends Service {
     final HackerNewsApi hackerNewsApi = getHackerNewsApi();
     serviceHandler.post(new Runnable() {
       @Override public void run() {
-        SqliteDbHelper sqliteDbHelper = new SqliteDbHelper(SyncService.this);
-        sqLiteDatabase = sqliteDbHelper.getWritableDatabase();
+        SQLiteDbHelper SQLiteDbHelper = new SQLiteDbHelper(SyncService.this);
+        sqLiteDatabase = SQLiteDbHelper.getWritableDatabase();
         Call<int[]> topStories = hackerNewsApi.getTopStories();
         int[] body = null;
         try {
@@ -67,15 +62,15 @@ public class SyncService extends Service {
         if (body == null) {
           return;
         }
-        TopStoryGateway topStoryGateway = new TopStoryGateway.SqliteTopStoryGateway(sqLiteDatabase);
+        TopStoryGateway topStoryGateway = new TopStoryGateway.SQLiteTopStoryGateway(sqLiteDatabase);
         topStoryGateway.replace(body);
 
         // Retrieve and insert the stories
         for (final int itemId : body) {
           Call<StoryItem> storyItemCall = hackerNewsApi.getStory(itemId);
           final StoryGateway storyGateway = new SqliteStoryGateway(sqLiteDatabase);
-          SqliteStoryCommentGateway storyCommentGateway =
-              new SqliteStoryCommentGateway(sqLiteDatabase);
+          SQLiteStoryCommentGateway storyCommentGateway =
+              new SQLiteStoryCommentGateway(sqLiteDatabase);
           storyItemCall.enqueue(new TopStoriesCallback(itemId, storyGateway, storyCommentGateway));
         }
       }

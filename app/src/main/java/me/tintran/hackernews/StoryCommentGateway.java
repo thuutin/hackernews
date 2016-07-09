@@ -11,11 +11,11 @@ import me.tintran.hackernews.data.StoryCommentContract;
 public interface StoryCommentGateway {
   void insert(int storyId, int[] commentIds);
 
-  public class SqliteStoryCommentGateway implements StoryCommentGateway {
+  public class SQLiteStoryCommentGateway implements StoryCommentGateway {
 
     private SQLiteDatabase sqLiteDatabase;
 
-    public SqliteStoryCommentGateway(SQLiteDatabase sqLiteDatabase) {
+    public SQLiteStoryCommentGateway(SQLiteDatabase sqLiteDatabase) {
       this.sqLiteDatabase = sqLiteDatabase;
     }
 

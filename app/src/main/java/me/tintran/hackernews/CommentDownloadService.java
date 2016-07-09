@@ -1,31 +1,21 @@
 package me.tintran.hackernews;
 
-import android.app.IntentService;
 import android.app.Service;
 import android.content.ContentValues;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.Build;
-import android.os.Handler;
-import android.os.HandlerThread;
 import android.os.IBinder;
-import android.os.Looper;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.TimerTask;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import me.tintran.hackernews.data.CommentContract;
 import me.tintran.hackernews.data.HackerNewsApi;
 import me.tintran.hackernews.data.HackerNewsApi.CommentItem;
-import me.tintran.hackernews.data.SqliteDbHelper;
-import me.tintran.hackernews.data.StoryCommentContract;
+import me.tintran.hackernews.data.SQLiteDbHelper;
 import me.tintran.hackernews.data.StoryCommentContract.StoryCommentColumns;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -70,9 +60,9 @@ public class CommentDownloadService extends Service {
 
     executorService.submit(new Runnable() {
       @Override public void run() {
-        @SuppressWarnings("SpellCheckingInspection") SqliteDbHelper sqliteDbHelper =
-            new SqliteDbHelper(CommentDownloadService.this);
-        final SQLiteDatabase writableDatabase = sqliteDbHelper.getWritableDatabase();
+        @SuppressWarnings("SpellCheckingInspection") SQLiteDbHelper SQLiteDbHelper =
+            new SQLiteDbHelper(CommentDownloadService.this);
+        final SQLiteDatabase writableDatabase = SQLiteDbHelper.getWritableDatabase();
         Cursor query = writableDatabase.query(StoryCommentColumns.TABLE_NAME, null,
             StoryCommentColumns.COLUMN_NAME_STORYID + " = ? ",
             new String[] { String.valueOf(storyId) }, null, null, null);

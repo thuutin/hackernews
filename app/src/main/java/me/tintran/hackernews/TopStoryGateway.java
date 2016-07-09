@@ -12,11 +12,11 @@ public interface TopStoryGateway {
 
   void replace(int[] topstoryids);
 
-  public class SqliteTopStoryGateway implements TopStoryGateway {
+  public class SQLiteTopStoryGateway implements TopStoryGateway {
 
     private SQLiteDatabase sqLiteDatabase;
 
-    public SqliteTopStoryGateway(SQLiteDatabase sqLiteDatabase) {
+    public SQLiteTopStoryGateway(SQLiteDatabase sqLiteDatabase) {
       this.sqLiteDatabase = sqLiteDatabase;
     }
 

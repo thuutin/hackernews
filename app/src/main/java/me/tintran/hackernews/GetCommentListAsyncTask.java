@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import me.tintran.hackernews.data.CommentContract;
 import me.tintran.hackernews.data.CommentListUseCase;
-import me.tintran.hackernews.data.SqliteDbHelper;
+import me.tintran.hackernews.data.SQLiteDbHelper;
 import me.tintran.hackernews.data.StoryCommentContract;
 import me.tintran.hackernews.storydetail.Comment;
 
@@ -36,8 +36,8 @@ public class GetCommentListAsyncTask extends AsyncTask<Integer, Void, List<Comme
       return null;
     }
     final int storyId = params[0];
-    SqliteDbHelper sqliteDbHelper = new SqliteDbHelper(context.get());
-    SQLiteDatabase readableDatabase = sqliteDbHelper.getReadableDatabase();
+    SQLiteDbHelper SQLiteDbHelper = new SQLiteDbHelper(context.get());
+    SQLiteDatabase readableDatabase = SQLiteDbHelper.getReadableDatabase();
     Cursor query = readableDatabase.query(CommentContract.CommentColumns.TABLE_NAME
             + " JOIN "
             + StoryCommentContract.StoryCommentColumns.TABLE_NAME
