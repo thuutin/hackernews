@@ -9,6 +9,7 @@ import me.tintran.hackernews.data.TopStoriesContract;
  * Created by tin on 7/9/16.
  */
 public interface TopStoryGateway {
+
   void replace(int[] topstoryids);
 
   public class SqliteTopStoryGateway implements TopStoryGateway {
