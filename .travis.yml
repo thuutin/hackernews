@@ -7,7 +7,7 @@ android:
     - build-tools-23.0.3
     - android-23
     - extra-android-m2repository
-script: ./gradlew build
+script: ./gradlew clean build
 
 notifications:
   slack:  codehere:OEMILiJsIE1pyisvddcr9MCU
