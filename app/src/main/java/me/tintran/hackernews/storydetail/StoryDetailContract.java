@@ -24,5 +24,7 @@ public interface StoryDetailContract {
     void detachView();
 
     void attachView(View view);
+
+    void loadComments();
   }
 }

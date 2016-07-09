@@ -1,9 +1,13 @@
 package me.tintran.hackernews.storydetail;
 
+import android.content.BroadcastReceiver;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.graphics.Canvas;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -24,10 +28,12 @@ public class StoryDetailActivity extends AppCompatActivity implements StoryDetai
   private StoryDetailContract.ActionsListener actionsListener;
   private int storyId;
 
+  BroadcastReceiver broadcastReceiver;
+
   @Override protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_storydetail);
-    if (!getIntent().hasExtra(STORY_ID)){
+    if (!getIntent().hasExtra(STORY_ID)) {
       throw new IllegalStateException("Did not find StoryId in intent extras");
     }
     final String storyTitle = getIntent().getStringExtra(STORY_TITLE);
@@ -52,6 +58,29 @@ public class StoryDetailActivity extends AppCompatActivity implements StoryDetai
   @Override protected void onStart() {
     super.onStart();
     actionsListener.attachView(this);
+    actionsListener.loadComments();
+  }
+
+  @Override protected void onResume() {
+    broadcastReceiver = new CommentDownloadCompleteBroadcastReceiver(new CommentDownloadCompleteBroadcastReceiver.ReloadComment() {
+      @Override public void loadComment() {
+        actionsListener.loadComments();
+      }
+    });
+    IntentFilter intentFilter = new IntentFilter();
+    intentFilter.addAction(SyncService.DONE_DOWNLOAD_COMMENTS);
+    try {
+      intentFilter.addDataType("comment/" + storyId);
+    } catch (IntentFilter.MalformedMimeTypeException e) {
+      e.printStackTrace();
+    }
+    LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, intentFilter);
+    super.onResume();
+  }
+
+  @Override protected void onPause() {
+    LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
+    super.onPause();
   }
 
   @Override protected void onStop() {
@@ -70,5 +99,4 @@ public class StoryDetailActivity extends AppCompatActivity implements StoryDetai
   @Override public void showCommentList(List<Comment> comments) {
     adapter.swapData(comments);
   }
-
 }

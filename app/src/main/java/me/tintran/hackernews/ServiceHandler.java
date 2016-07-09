@@ -8,16 +8,21 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.support.annotation.WorkerThread;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+import android.util.SparseArray;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import me.tintran.hackernews.data.CommentContract;
 import me.tintran.hackernews.data.CommentContract.CommentColumns;
 import me.tintran.hackernews.data.HackerNewsApi;
 import me.tintran.hackernews.data.StoryCommentContract;
+import me.tintran.hackernews.data.StoryContract;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -36,7 +41,7 @@ public final class ServiceHandler extends Handler {
   private HackerNewsApi.Stories storiesApi;
   private HackerNewsApi.Comments commentsApi;
   private final StopListener stopListener;
-  private List<Call> callList = new ArrayList<>();
+  private SparseArray<List<Call>> callList = new SparseArray<>();
 
   ServiceHandler(Looper looper, SQLiteOpenHelper sqLiteOpenHelper, HackerNewsApi.Stories storiesApi,
       HackerNewsApi.Comments commentsApi, StopListener stopListener) {
@@ -45,6 +50,8 @@ public final class ServiceHandler extends Handler {
     this.storiesApi = storiesApi;
     this.commentsApi = commentsApi;
     this.stopListener = stopListener;
+    callList.put(DOWNLOAD_COMMENT_FOR_STORY, new ArrayList<Call>());
+    callList.put(DOWNLOAD_TOP_STORIES, new ArrayList<Call>());
   }
 
   @Override public void handleMessage(Message msg) {
@@ -73,10 +80,12 @@ public final class ServiceHandler extends Handler {
         } catch (IOException e) {
           e.printStackTrace();
         }
-        final int[] storyIdsToRetrieve = getIntersection(updatedStories, topStoryIds);
-
+        Cursor storiesIdsFromDatabase = sqLiteDatabase.query(StoryContract.StoryColumns.TABLE_NAME,
+            new String[] { StoryContract.StoryColumns._ID }, null, null, null, null, null);
+        storiesIdsFromDatabase.close();
+        StoryHelper storyHelper = new StoryHelper(topStoryIds, updatedStories, null);
         // Retrieve and insert the stories
-        for (final int itemId : storyIdsToRetrieve) {
+        for (final int itemId : storyHelper.getIdsToRetrieve()) {
           final Call<HackerNewsApi.StoryItem> storyItemCall = storiesApi.getStory(itemId);
           final StoryGateway storyGateway = new StoryGateway.SqliteStoryGateway(sqLiteDatabase);
           StoryCommentGateway.SQLiteStoryCommentGateway storyCommentGateway =
@@ -85,8 +94,8 @@ public final class ServiceHandler extends Handler {
               new TopStoriesCallback(itemId, storyGateway, storyCommentGateway,
                   new TopStoriesCallback.OnReturn<Call<HackerNewsApi.StoryItem>>() {
                     @Override public void onReturn(Call<HackerNewsApi.StoryItem> call) {
-                      callList.add(call);
-                      stopServiceIfNeeded();
+                      callList.get(DOWNLOAD_TOP_STORIES).add(call);
+                      stopServiceIfNeeded(-1); // TODO
                     }
                   });
           storyItemCall.enqueue(callback);
@@ -95,11 +104,11 @@ public final class ServiceHandler extends Handler {
       }
 
       case DOWNLOAD_COMMENT_FOR_STORY:
-        String storyId = (String) msg.obj;
+        final Integer storyId = (Integer) msg.obj;
         Cursor query =
             sqLiteDatabase.query(StoryCommentContract.StoryCommentColumns.TABLE_NAME, null,
                 StoryCommentContract.StoryCommentColumns.COLUMN_NAME_STORYID + " = ? ",
-                new String[] { storyId }, null, null, null);
+                new String[] { storyId.toString() }, null, null, null);
         int count = query.getCount();
         Log.d("CommentDownloadService", "loading comments " + count + " items");
         for (int i = 0; i < query.getCount(); i++) {
@@ -107,7 +116,7 @@ public final class ServiceHandler extends Handler {
           final int commentId = query.getInt(
               query.getColumnIndex(StoryCommentContract.StoryCommentColumns.COLUMN_NAME_COMMENTID));
           final Call<HackerNewsApi.CommentItem> comment = commentsApi.getComment(commentId);
-
+          callList.get(DOWNLOAD_COMMENT_FOR_STORY).add(comment);
           comment.enqueue(new retrofit2.Callback<HackerNewsApi.CommentItem>() {
             @Override public void onResponse(Call<HackerNewsApi.CommentItem> call,
                 Response<HackerNewsApi.CommentItem> response) {
@@ -123,44 +132,39 @@ public final class ServiceHandler extends Handler {
 
               sqLiteDatabase.insertWithOnConflict(CommentColumns.TABLE_NAME, null, contentValues,
                   SQLiteDatabase.CONFLICT_REPLACE);
-              callList.remove(call);
+              callList.get(DOWNLOAD_COMMENT_FOR_STORY).remove(call);
               Log.d("CommentDownloadService", "Done loading comment" + commentId);
-              stopServiceIfNeeded();
+              stopServiceIfNeeded(storyId);
             }
 
             @Override public void onFailure(Call<HackerNewsApi.CommentItem> call, Throwable t) {
-              callList.remove(call);
+              callList.get(DOWNLOAD_COMMENT_FOR_STORY).remove(call);
               Log.d("CommentDownloadService", "failed loading " + commentId);
-              stopServiceIfNeeded();
+              stopServiceIfNeeded(storyId);
             }
           });
         }
-
         query.close();
         break;
+
       default:
         throw new UnsupportedOperationException();
     }
   }
 
-  private static int[] getIntersection(int[] updatedStories, int[] topStoryIds) {
-    List<Integer> integers = new ArrayList<>();
-    for (int updatedStory : updatedStories) {
-      for (int topStoryId : topStoryIds) {
-        if (topStoryId == updatedStory) {
-          integers.add(updatedStory);
-        }
+  private void stopServiceIfNeeded(int storyId) {
+    int size = callList.size();
+    boolean isAllEmpty = true;
+    for (int i = 0; i < size; i++) {
+      int keyAtI = callList.keyAt(i);
+      if (!callList.get(keyAtI).isEmpty()) {
+        isAllEmpty = false;
+      } else {
+        stopListener.notifyComplete(storyId);
       }
     }
-    int[] results = new int[integers.size()];
-    for (int i = 0; i < integers.size(); i++) {
-      results[i] = integers.get(i);
-    }
-    return results;
-  }
 
-  private void stopServiceIfNeeded() {
-    if (callList.isEmpty()) {
+    if (isAllEmpty) {
       if (sqLiteDatabase != null && sqLiteDatabase.isOpen()) {
         sqLiteDatabase.close();
       }

@@ -22,8 +22,6 @@ class StoryDetailPresenter
 
   @Override public void attachView(StoryDetailContract.View view) {
     this.view = view;
-    view.showStatusText(R.string.loading);
-    commentListUseCase.getCommentList(storyId, this);
   }
 
   @Override public void detachView() {
@@ -36,6 +34,11 @@ class StoryDetailPresenter
       return;
     }
     v.showCommentList(commentList);
+  }
+
+  @Override public void loadComments() {
+    view.showStatusText(R.string.loading);
+    commentListUseCase.getCommentList(storyId, this);
   }
 
   @Override public void onError(int code) {

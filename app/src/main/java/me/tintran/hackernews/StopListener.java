@@ -5,4 +5,6 @@ package me.tintran.hackernews;
  */
 public interface StopListener {
   void notifyStop();
+
+  void notifyComplete(int storyId);
 }

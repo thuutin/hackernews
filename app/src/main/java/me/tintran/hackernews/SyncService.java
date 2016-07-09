@@ -10,6 +10,7 @@ import android.os.Message;
 import android.os.Process;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import java.util.concurrent.Executor;
 import me.tintran.hackernews.data.HackerNewsApi;
@@ -26,6 +27,7 @@ public class SyncService extends Service {
   public static final String DOWNLOAD_COMMENT_FOR_STORY = "DOWNLOAD_COMMENT_FOR_STORY";
 
   public static final String STORY_ID = "storyId";
+  public static final String DONE_DOWNLOAD_COMMENTS = "DONE_DOWNLOAD_COMMENTS";
 
   private Handler serviceHandler;
 
@@ -50,6 +52,13 @@ public class SyncService extends Service {
           @Override public void notifyStop() {
             stopSelf();
           }
+
+          @Override public void notifyComplete(int storyId) {
+            Intent intent = new Intent();
+            intent.setAction(DONE_DOWNLOAD_COMMENTS);
+            intent.setType("comment/" + storyId);
+            LocalBroadcastManager.getInstance(SyncService.this).sendBroadcast(intent);
+          }
         });
   }
 
@@ -73,7 +82,7 @@ public class SyncService extends Service {
         }
         Message message = serviceHandler.obtainMessage();
         message.what = ServiceHandler.DOWNLOAD_COMMENT_FOR_STORY;
-        message.obj = String.valueOf(storyId);
+        message.obj = storyId;
         serviceHandler.sendMessage(message);
         break;
       }
