@@ -18,14 +18,18 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentItemViewHolder> 
     return new CommentItemViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.comment_item, parent, false));
   }
 
-
   @Override public void onBindViewHolder(CommentItemViewHolder holder, int position) {
     Comment comment = comments.get(position);
     holder.commentTextView.setText(comment.text);
+    holder.commentIdTextView.setText(String.valueOf(comment.id));
   }
 
   @Override public int getItemCount() {
     return comments == null ? 0 : comments.size();
+  }
+
+  @Override public long getItemId(int position) {
+    return comments.get(position).id;
   }
 
   public void swapData(List<Comment> comments) {

@@ -28,8 +28,6 @@ public interface TopStoryGateway {
       } else {
         sqLiteDatabase.beginTransaction();
       }
-      Log.d(SQLiteTopStoryGateway.class.getSimpleName(), "In Transaction" + " thread " + Thread.currentThread().getId());
-
       try {
         sqLiteDatabase.delete(TopStoriesContract.StoryColumns.TABLE_NAME, null, null);
         ContentValues contentValues = new ContentValues();
@@ -42,8 +40,6 @@ public interface TopStoryGateway {
         sqLiteDatabase.setTransactionSuccessful();
       } finally {
         sqLiteDatabase.endTransaction();
-        Log.d(SQLiteTopStoryGateway.class.getSimpleName(), "Out Transaction" + " thread " + Thread.currentThread().getId());
-
       }
     }
   }
