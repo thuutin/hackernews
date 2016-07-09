@@ -12,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import java.io.IOException;
+import java.util.AbstractQueue;
 import java.util.concurrent.Executor;
 import me.tintran.hackernews.StoryCommentGateway.SQLiteStoryCommentGateway;
 import me.tintran.hackernews.StoryGateway.SqliteStoryGateway;
@@ -29,6 +30,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class SyncService extends Service {
 
   private Handler serviceHandler;
+  private AbstractQueue callList;
 
   @Nullable @Override public IBinder onBind(Intent intent) {
     return null;
@@ -47,42 +49,48 @@ public class SyncService extends Service {
   }
 
   @Override public int onStartCommand(Intent intent, int flags, int startId) {
-    final HackerNewsApi hackerNewsApi = getHackerNewsApi();
     serviceHandler.post(new Runnable() {
       @Override public void run() {
+        final HackerNewsApi hackerNewsApi = getHackerNewsApi();
         SQLiteDbHelper SQLiteDbHelper = new SQLiteDbHelper(SyncService.this);
         sqLiteDatabase = SQLiteDbHelper.getWritableDatabase();
         Call<int[]> topStories = hackerNewsApi.getTopStories();
-        int[] body = null;
+        int[] topStoryIds = null;
         try {
-          body = topStories.execute().body();
+          topStoryIds = topStories.execute().body();
         } catch (IOException e) {
           e.printStackTrace();
         }
-        if (body == null) {
+        if (topStoryIds == null) {
           return;
         }
         TopStoryGateway topStoryGateway = new TopStoryGateway.SQLiteTopStoryGateway(sqLiteDatabase);
-        topStoryGateway.replace(body);
+        topStoryGateway.replaceTopStoryIds(topStoryIds);
 
         // Retrieve and insert the stories
-        for (final int itemId : body) {
-          Call<StoryItem> storyItemCall = hackerNewsApi.getStory(itemId);
+        for (final int itemId : topStoryIds) {
+          final Call<StoryItem> storyItemCall = hackerNewsApi.getStory(itemId);
           final StoryGateway storyGateway = new SqliteStoryGateway(sqLiteDatabase);
           SQLiteStoryCommentGateway storyCommentGateway =
               new SQLiteStoryCommentGateway(sqLiteDatabase);
-          storyItemCall.enqueue(new TopStoriesCallback(itemId, storyGateway, storyCommentGateway));
+          storyItemCall.enqueue(new TopStoriesCallback(itemId, storyGateway, storyCommentGateway,
+              new TopStoriesCallback.OnReturn<Call<StoryItem>>() {
+                @Override public void onReturn(Call<StoryItem> call) {
+                  callList.remove(call);
+                  shutdownServiceIfNeeded();
+                }
+              }));
         }
       }
     });
     return START_NOT_STICKY;
   }
 
-  //private void shutdownServiceIfNeeded() {
-  //  if (callList.isEmpty()) {
-  //    stopSelf();
-  //  }
-  //}
+  private void shutdownServiceIfNeeded() {
+    if (callList.isEmpty()) {
+      stopSelf();
+    }
+  }
 
   private HackerNewsApi getHackerNewsApi() {
     GsonConverterFactory factory = GsonConverterFactory.create();

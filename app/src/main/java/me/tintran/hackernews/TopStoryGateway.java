@@ -10,7 +10,7 @@ import me.tintran.hackernews.data.TopStoriesContract;
  */
 public interface TopStoryGateway {
 
-  void replace(int[] topstoryids);
+  void replaceTopStoryIds(int[] topstoryids);
 
   public class SQLiteTopStoryGateway implements TopStoryGateway {
 
@@ -20,7 +20,7 @@ public interface TopStoryGateway {
       this.sqLiteDatabase = sqLiteDatabase;
     }
 
-    @Override public void replace(int[] topstoryids) {
+    @Override public void replaceTopStoryIds(int[] topstoryids) {
       // Replacing all records in the TopStories table
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
         sqLiteDatabase.beginTransactionNonExclusive();
