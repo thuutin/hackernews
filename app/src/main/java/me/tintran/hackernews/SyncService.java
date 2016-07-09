@@ -2,24 +2,18 @@ package me.tintran.hackernews;
 
 import android.app.Service;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Looper;
+import android.os.Message;
 import android.os.Process;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
-import java.io.IOException;
-import java.util.AbstractQueue;
 import java.util.concurrent.Executor;
-import me.tintran.hackernews.StoryCommentGateway.SQLiteStoryCommentGateway;
-import me.tintran.hackernews.StoryGateway.SqliteStoryGateway;
 import me.tintran.hackernews.data.HackerNewsApi;
-import me.tintran.hackernews.data.HackerNewsApi.StoryItem;
 import me.tintran.hackernews.data.SQLiteDbHelper;
-import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -30,66 +24,33 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class SyncService extends Service {
 
   private Handler serviceHandler;
-  private AbstractQueue callList;
 
   @Nullable @Override public IBinder onBind(Intent intent) {
     return null;
   }
 
   private static final String baseUrl = "https://hacker-news.firebaseio.com/v0/";
-  private SQLiteDatabase sqLiteDatabase;
 
   @Override public void onCreate() {
     super.onCreate();
     HandlerThread handlerThread =
         new HandlerThread(SyncService.class.getSimpleName(), Process.THREAD_PRIORITY_BACKGROUND);
     handlerThread.start();
+    Log.d(SyncService.class.getSimpleName(), "Start Handler Thread " + handlerThread.getId() + "  " + toString());
     Looper looper = handlerThread.getLooper();
-    serviceHandler = new Handler(looper);
+    SQLiteDbHelper sqliteDbHelper = new SQLiteDbHelper(SyncService.this);
+    serviceHandler = new ServiceHandler(looper, sqliteDbHelper, getHackerNewsApi(), new StopListener() {
+      @Override public void notifyStop() {
+        stopSelf();
+      }
+    });
   }
 
   @Override public int onStartCommand(Intent intent, int flags, int startId) {
-    serviceHandler.post(new Runnable() {
-      @Override public void run() {
-        final HackerNewsApi hackerNewsApi = getHackerNewsApi();
-        SQLiteDbHelper SQLiteDbHelper = new SQLiteDbHelper(SyncService.this);
-        sqLiteDatabase = SQLiteDbHelper.getWritableDatabase();
-        Call<int[]> topStories = hackerNewsApi.getTopStories();
-        int[] topStoryIds = null;
-        try {
-          topStoryIds = topStories.execute().body();
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-        if (topStoryIds == null) {
-          return;
-        }
-        TopStoryGateway topStoryGateway = new TopStoryGateway.SQLiteTopStoryGateway(sqLiteDatabase);
-        topStoryGateway.replaceTopStoryIds(topStoryIds);
-
-        // Retrieve and insert the stories
-        for (final int itemId : topStoryIds) {
-          final Call<StoryItem> storyItemCall = hackerNewsApi.getStory(itemId);
-          final StoryGateway storyGateway = new SqliteStoryGateway(sqLiteDatabase);
-          SQLiteStoryCommentGateway storyCommentGateway =
-              new SQLiteStoryCommentGateway(sqLiteDatabase);
-          storyItemCall.enqueue(new TopStoriesCallback(itemId, storyGateway, storyCommentGateway,
-              new TopStoriesCallback.OnReturn<Call<StoryItem>>() {
-                @Override public void onReturn(Call<StoryItem> call) {
-                  callList.remove(call);
-                  shutdownServiceIfNeeded();
-                }
-              }));
-        }
-      }
-    });
+    Message message = serviceHandler.obtainMessage();
+    message.what = ServiceHandler.DOWNLOAD_TOP_STORIES;
+    serviceHandler.sendMessage(message);
     return START_NOT_STICKY;
-  }
-
-  private void shutdownServiceIfNeeded() {
-    if (callList.isEmpty()) {
-      stopSelf();
-    }
   }
 
   private HackerNewsApi getHackerNewsApi() {
@@ -103,9 +64,6 @@ public class SyncService extends Service {
   }
 
   @Override public void onDestroy() {
-    if (sqLiteDatabase != null && sqLiteDatabase.isOpen()) {
-      sqLiteDatabase.close();
-    }
     super.onDestroy();
     Log.d(SyncService.class.getSimpleName(), "Hello + I am done");
   }

@@ -61,8 +61,10 @@ public class StoriesRepository implements TopStoriesUseCase, CommentListUseCase 
       String tableName = TopStoriesContract.StoryColumns.TABLE_NAME +
           " LEFT JOIN " + StoryContract.StoryColumns.TABLE_NAME +
           " ON " + StoryContract.StoryColumns.TABLE_NAME + "." + StoryContract.StoryColumns._ID + " = " + TopStoriesContract.StoryColumns.STORYID;
+
       Cursor query = readableDatabase.query(tableName, null, null, null, null, null,
           TopStoriesContract.StoryColumns.TABLE_NAME + "." + TopStoriesContract.StoryColumns._ID + " ASC");
+
       int size = query.getCount();
       List<Story> results = new ArrayList<>(size);
       for (int i = 0; i < size; i++) {

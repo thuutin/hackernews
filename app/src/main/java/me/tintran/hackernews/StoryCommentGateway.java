@@ -3,6 +3,7 @@ package me.tintran.hackernews;
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
+import android.util.Log;
 import me.tintran.hackernews.data.StoryCommentContract;
 
 /**
@@ -30,6 +31,7 @@ public interface StoryCommentGateway {
       } else {
         sqLiteDatabase.beginTransaction();
       }
+      Log.d(SQLiteStoryCommentGateway.class.getSimpleName(), "In Transaction" + " thread " + Thread.currentThread().getId());
       try {
         contentValues.put(StoryCommentContract.StoryCommentColumns.COLUMN_NAME_STORYID, storyId);
         for (int i = 0; i < commentIds.length; i++) {
@@ -41,6 +43,8 @@ public interface StoryCommentGateway {
         sqLiteDatabase.setTransactionSuccessful();
       } finally {
         sqLiteDatabase.endTransaction();
+        Log.d(SQLiteStoryCommentGateway.class.getSimpleName(), "Out Transaction" + " thread " + Thread.currentThread().getId());
+
       }
     }
   }

@@ -3,6 +3,7 @@ package me.tintran.hackernews;
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
+import android.util.Log;
 import me.tintran.hackernews.data.TopStoriesContract;
 
 /**
@@ -27,6 +28,8 @@ public interface TopStoryGateway {
       } else {
         sqLiteDatabase.beginTransaction();
       }
+      Log.d(SQLiteTopStoryGateway.class.getSimpleName(), "In Transaction" + " thread " + Thread.currentThread().getId());
+
       try {
         sqLiteDatabase.delete(TopStoriesContract.StoryColumns.TABLE_NAME, null, null);
         ContentValues contentValues = new ContentValues();
@@ -39,6 +42,8 @@ public interface TopStoryGateway {
         sqLiteDatabase.setTransactionSuccessful();
       } finally {
         sqLiteDatabase.endTransaction();
+        Log.d(SQLiteTopStoryGateway.class.getSimpleName(), "Out Transaction" + " thread " + Thread.currentThread().getId());
+
       }
     }
   }
