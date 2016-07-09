@@ -44,7 +44,6 @@ public interface StoryCommentGateway {
       } finally {
         sqLiteDatabase.endTransaction();
         Log.d(SQLiteStoryCommentGateway.class.getSimpleName(), "Out Transaction" + " thread " + Thread.currentThread().getId());
-
       }
     }
   }
