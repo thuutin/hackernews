@@ -30,15 +30,18 @@ public final class ServiceHandler extends Handler {
 
   private SQLiteDatabase sqLiteDatabase;
   private final SQLiteOpenHelper sqLiteOpenHelper;
-  private HackerNewsApi hackerNewsApi;
+  private HackerNewsApi.Stories storiesApi;
+  private HackerNewsApi.Comments commentsApi;
   private final StopListener stopListener;
   private List<Call> callList = new ArrayList<>();
 
-  ServiceHandler(Looper looper, SQLiteOpenHelper sqLiteOpenHelper, HackerNewsApi hackerNewsApi,
+  ServiceHandler(Looper looper, SQLiteOpenHelper sqLiteOpenHelper, HackerNewsApi.Stories storiesApi,
+      HackerNewsApi.Comments commentsApi,
       StopListener stopListener) {
     super(looper);
     this.sqLiteOpenHelper = sqLiteOpenHelper;
-    this.hackerNewsApi = hackerNewsApi;
+    this.storiesApi = storiesApi;
+    this.commentsApi = commentsApi;
     this.stopListener = stopListener;
   }
 
@@ -47,7 +50,7 @@ public final class ServiceHandler extends Handler {
     switch (msg.what) {
       case DOWNLOAD_TOP_STORIES: {
 
-        Call<int[]> topStories = hackerNewsApi.getTopStories();
+        Call<int[]> topStories = storiesApi.getTopStories();
         int[] topStoryIds = null;
         try {
           topStoryIds = topStories.execute().body();
@@ -63,7 +66,7 @@ public final class ServiceHandler extends Handler {
 
         // Retrieve and insert the stories
         for (final int itemId : topStoryIds) {
-          final Call<HackerNewsApi.StoryItem> storyItemCall = hackerNewsApi.getStory(itemId);
+          final Call<HackerNewsApi.StoryItem> storyItemCall = storiesApi.getStory(itemId);
           final StoryGateway storyGateway = new StoryGateway.SqliteStoryGateway(sqLiteDatabase);
           StoryCommentGateway.SQLiteStoryCommentGateway storyCommentGateway =
               new StoryCommentGateway.SQLiteStoryCommentGateway(sqLiteDatabase);
@@ -92,7 +95,7 @@ public final class ServiceHandler extends Handler {
           query.moveToPosition(i);
           final int commentId = query.getInt(
               query.getColumnIndex(StoryCommentContract.StoryCommentColumns.COLUMN_NAME_COMMENTID));
-          final Call<HackerNewsApi.CommentItem> comment = hackerNewsApi.getComment(commentId);
+          final Call<HackerNewsApi.CommentItem> comment = commentsApi.getComment(commentId);
 
           comment.enqueue(new retrofit2.Callback<HackerNewsApi.CommentItem>() {
             @Override public void onResponse(Call<HackerNewsApi.CommentItem> call,

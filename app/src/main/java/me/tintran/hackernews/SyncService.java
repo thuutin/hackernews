@@ -44,8 +44,12 @@ public class SyncService extends Service {
         "Start Handler Thread " + handlerThread.getId() + "  " + toString());
     Looper looper = handlerThread.getLooper();
     SQLiteDbHelper sqliteDbHelper = new SQLiteDbHelper(SyncService.this);
-    serviceHandler =
-        new ServiceHandler(looper, sqliteDbHelper, getHackerNewsApi(), new StopListener() {
+    serviceHandler = new ServiceHandler(
+        looper,
+        sqliteDbHelper,
+        getHackerNewsApi(HackerNewsApi.Stories.class),
+        getHackerNewsApi(HackerNewsApi.Comments.class),
+        new StopListener() {
           @Override public void notifyStop() {
             stopSelf();
           }
@@ -77,14 +81,14 @@ public class SyncService extends Service {
     return START_NOT_STICKY;
   }
 
-  private HackerNewsApi getHackerNewsApi() {
+  private <T> T getHackerNewsApi(Class<T> tClass) {
     GsonConverterFactory factory = GsonConverterFactory.create();
     Retrofit retrofit = new Retrofit.Builder().baseUrl(baseUrl).callbackExecutor(new Executor() {
       @Override public void execute(@NonNull Runnable command) {
         serviceHandler.post(command);
       }
     }).addConverterFactory(factory).build();
-    return retrofit.create(HackerNewsApi.class);
+    return retrofit.create(tClass);
   }
 
   @Override public void onDestroy() {

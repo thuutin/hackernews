@@ -21,7 +21,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentItemViewHolder> 
 
   @Override public void onBindViewHolder(CommentItemViewHolder holder, int position) {
     Comment comment = comments.get(position);
-    holder.commentTextView.setText(comment.text);
+    holder.commentTextView.setText("Comments " + position + comment.text);
   }
 
   @Override public int getItemCount() {

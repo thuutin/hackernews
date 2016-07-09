@@ -42,29 +42,27 @@ public class GetCommentListAsyncTask extends AsyncTask<Integer, Void, List<Comme
             + " JOIN "
             + StoryCommentContract.StoryCommentColumns.TABLE_NAME
             + " ON "
-            + CommentContract.CommentColumns.TABLE_NAME + "." + CommentContract.CommentColumns._ID
+            + CommentContract.CommentColumns.TABLE_NAME
+            + "."
+            + CommentContract.CommentColumns._ID
             + " = "
             + StoryCommentContract.StoryCommentColumns.COLUMN_NAME_COMMENTID, null,
         StoryCommentContract.StoryCommentColumns.COLUMN_NAME_STORYID + " = ? ",
-        new String[] { String.valueOf(storyId) },
-        null,
-        null,
-        CommentContract.CommentColumns.COLUMN_NAME_TIME + " DESC ",
-        null);
+        new String[] { String.valueOf(storyId) }, null, null,
+        CommentContract.CommentColumns.COLUMN_NAME_TIME + " DESC ", null);
     List<Comment> comments = new ArrayList<>(query.getCount());
     for (int i = 0; i < query.getCount(); i++) {
       query.moveToPosition(i);
       final int commentId = query.getInt(query.getColumnIndex(CommentContract.CommentColumns._ID));
       final String commentText =
           query.getString(query.getColumnIndex(CommentContract.CommentColumns.COLUMN_NAME_TEXT));
-      Comment comment = new Comment(commentId, Html.fromHtml(commentText).toString());
+      Comment comment = new Comment(commentId,
+          commentText == null ? null : Html.fromHtml(commentText).toString());
       comments.add(comment);
     }
     query.close();
     return comments;
   }
-
-
 
   @Override protected void onPostExecute(List<Comment> comments) {
     if (context.get() == null || callback.get() == null) {

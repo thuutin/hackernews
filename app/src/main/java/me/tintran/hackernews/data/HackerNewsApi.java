@@ -9,21 +9,20 @@ import retrofit2.http.Path;
  */
 
 public interface HackerNewsApi {
-  @GET(value = "topstories.json")
-  Call<int[]> getTopStories();
+  interface Stories {
+    @GET(value = "topstories.json") Call<int[]> getTopStories();
+    @GET(value = "item/{id}.json") Call<StoryItem> getStory(@Path("id") int storyId);
+  }
 
-  @GET(value = "item/{id}.json")
-  Call<StoryItem> getStory(@Path("id") int storyId);
-
-  @GET(value = "item/{id}.json")
-  Call<CommentItem> getComment(@Path("id") int commentId);
+  interface Comments {
+    @GET(value = "item/{id}.json")
+    Call<CommentItem> getComment(@Path("id") int commentId);
+  }
 
   /**
    * Created by tin on 7/7/16.
    */
   final class StoryItem {
-
-
     public int id;
     public int descendants;
     public int score;
