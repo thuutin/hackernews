@@ -7,6 +7,7 @@ import android.support.annotation.StringRes;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.widget.TextView;
 import java.util.List;
 import me.tintran.hackernews.R;
 import me.tintran.hackernews.StoriesRepository;
@@ -34,7 +35,9 @@ public class StoryDetailActivity extends AppCompatActivity implements StoryDetai
     Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
     setSupportActionBar(toolbar);
     getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-    getSupportActionBar().setTitle(storyTitle);
+    final TextView storyTitleTextView = (TextView) findViewById(R.id.storyTitle);
+    storyTitleTextView.setText(storyTitle);
+
     final RecyclerView commentList = (RecyclerView) findViewById(R.id.commentList);
     adapter = new CommentAdapter();
     adapter.setHasStableIds(true);

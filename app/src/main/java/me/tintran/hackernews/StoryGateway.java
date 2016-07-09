@@ -11,7 +11,8 @@ import me.tintran.hackernews.data.StoryContract;
  */
 
 interface StoryGateway {
-  void insertStory(int id, String title, int descendants, int score, long time, String type, String url);
+  void insertStory(int id, String title, int descendants, int score, long time, String type,
+      String url);
 
   class SqliteStoryGateway implements StoryGateway {
     private SQLiteDatabase sqLiteDatabase;
@@ -20,9 +21,8 @@ interface StoryGateway {
       this.sqLiteDatabase = sqLiteDatabase;
     }
 
-    @Override
-    public void insertStory(int id, String title, int descendants, int score, long time, String type,
-        String url) {
+    @Override public void insertStory(int id, String title, int descendants, int score, long time,
+        String type, String url) {
       final ContentValues contentvalues = new ContentValues();
       contentvalues.put(StoryContract.StoryColumns.COLUMN_NAME_TITLE, title);
       contentvalues.put(StoryContract.StoryColumns._ID, id);
@@ -32,22 +32,8 @@ interface StoryGateway {
       contentvalues.put(StoryContract.StoryColumns.COLUMN_NAME_TYPE, type);
       contentvalues.put(StoryContract.StoryColumns.COLUMN_NAME_URL, url);
 
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-        sqLiteDatabase.beginTransactionNonExclusive();
-      } else {
-        sqLiteDatabase.beginTransaction();
-      }
-      Log.d("StoryGateway", "In Transaction " + id + " thread " + Thread.currentThread().getId());
-      try {
-        sqLiteDatabase.insertWithOnConflict(StoryContract.StoryColumns.TABLE_NAME, null, contentvalues,
-            SQLiteDatabase.CONFLICT_REPLACE);
-        sqLiteDatabase.setTransactionSuccessful();
-      } finally {
-        sqLiteDatabase.endTransaction();
-        Log.d("StoryGateway", "Out Transaction " + id + " thread " + Thread.currentThread().getId());
-
-      }
-
+      sqLiteDatabase.insertWithOnConflict(StoryContract.StoryColumns.TABLE_NAME, null,
+          contentvalues, SQLiteDatabase.CONFLICT_REPLACE);
     }
   }
 }
