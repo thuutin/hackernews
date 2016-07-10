@@ -43,21 +43,24 @@ public class HomePresenterTest {
   @Test public void doShowItemsOnLoadError() throws Exception {
     homePresenter.attachView(view);
     homePresenter.loadTopStories();
+    verify(view).showLoading();
     verify(topStoriesUseCase).getTopStories(callbackArgumentCaptor.capture());
     final TopStoriesUseCase.Callback capturedCallback = callbackArgumentCaptor.getValue();
     int fakeErrorCode = 1001;
     capturedCallback.onError(fakeErrorCode);
     verify(view).showStatusText(R.string.error_load_stories);
+    verify(view).hideLoading();
   }
 
   @Test public void doShowItemsOnLoadSuccess() throws Exception {
     homePresenter.attachView(view);
     homePresenter.loadTopStories();
-    verify(view).showStatusText(R.string.loading);
+    verify(view).showLoading();
     verify(topStoriesUseCase).getTopStories(callbackArgumentCaptor.capture());
     final TopStoriesUseCase.Callback capturedCallback = callbackArgumentCaptor.getValue();
     capturedCallback.onComplete(mockStories);
     verify(view).showItem(listArgumentCaptor.capture());
+    verify(view).hideLoading();
     List<Story> capturedListStory = listArgumentCaptor.getValue();
     assertEquals(capturedListStory.size(), mockStories.size());
     for (int i = 0; i < capturedListStory.size(); i++) {
@@ -72,9 +75,11 @@ public class HomePresenterTest {
     final List<Story> mockStories = new ArrayList<>(3);
     homePresenter.attachView(view);
     homePresenter.loadTopStories();
+    verify(view).showLoading();
     verify(topStoriesUseCase).getTopStories(callbackArgumentCaptor.capture());
     final TopStoriesUseCase.Callback capturedCallback = callbackArgumentCaptor.getValue();
     capturedCallback.onComplete(mockStories);
+    verify(view).hideLoading();
     verify(view).showStatusText(R.string.no_stories);
   }
 
@@ -91,7 +96,7 @@ public class HomePresenterTest {
   @Test public void noInteractionWithViewOnLoadErrorAfterOnDetach() throws Exception {
     homePresenter.attachView(view);
     homePresenter.loadTopStories();
-    verify(view).showStatusText(R.string.loading);
+    verify(view).showLoading();
     int anyCode = 1;
     verify(topStoriesUseCase).getTopStories(callbackArgumentCaptor.capture());
     homePresenter.detachView();
@@ -102,17 +107,28 @@ public class HomePresenterTest {
   @Test public void noInteractionWithViewOnLoadSuccessAfterOnDetach() throws Exception {
     homePresenter.attachView(view);
     homePresenter.loadTopStories();
-    verify(view).showStatusText(R.string.loading);
+    verify(view).showLoading();
     verify(topStoriesUseCase).getTopStories(callbackArgumentCaptor.capture());
     homePresenter.detachView();
     callbackArgumentCaptor.getValue().onComplete(mockStories);
     verifyNoMoreInteractions(view);
   }
 
+  @Test public void doRegister_OnResume(){
+    homePresenter.attachView(view);
+    homePresenter.onResume();
+    verify(view).registerReceiver();
+  }
+
+  @Test public void doUnregister_OnPause(){
+    homePresenter.attachView(view);
+    homePresenter.onPause();
+    verify(view).unregisterReceiver();
+  }
+
   @Test public void onSwipeToRefresh_doCallRefresh() throws Exception {
     homePresenter.attachView(view);
     homePresenter.onSwipeToRefresh();
     verify(view).refreshTopStories();
-
   }
 }

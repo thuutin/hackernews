@@ -87,7 +87,12 @@ public class StoryDetailActivity extends AppCompatActivity implements StoryDetai
     actionsListener.detachView();
   }
 
-  @Override public void hideStatusText() {
+
+  @Override public void showLoading() {
+
+  }
+
+  @Override public void hideLoading() {
 
   }
 

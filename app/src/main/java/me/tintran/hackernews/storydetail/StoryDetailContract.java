@@ -11,12 +11,12 @@ public interface StoryDetailContract {
 
   interface View {
 
-    void hideStatusText();
-
     void showStatusText(@StringRes int statusRes);
 
     void showCommentList(List<Comment> comments);
 
+    void showLoading();
+    void hideLoading();
   }
 
   interface ActionsListener {

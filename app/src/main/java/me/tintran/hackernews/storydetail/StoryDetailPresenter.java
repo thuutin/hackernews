@@ -37,7 +37,7 @@ class StoryDetailPresenter
   }
 
   @Override public void loadComments() {
-    view.showStatusText(R.string.loading);
+    //view.showStatusText(R.string.loading);
     commentListUseCase.getCommentList(storyId, this);
   }
 

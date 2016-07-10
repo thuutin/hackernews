@@ -50,7 +50,7 @@ final class HomePresenter implements HomeContract.ActionsListener, TopStoriesUse
   }
 
   @Override public void loadTopStories() {
-    view.showStatusText(R.string.loading);
+    view.showLoading();
     topStoriesUseCase.getTopStories(this);
   }
 

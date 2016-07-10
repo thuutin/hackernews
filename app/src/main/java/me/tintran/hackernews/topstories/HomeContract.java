@@ -27,6 +27,8 @@ interface HomeContract {
     void unregisterReceiver();
 
     void hideLoading();
+
+    void showLoading();
   }
 
   interface ActionsListener {

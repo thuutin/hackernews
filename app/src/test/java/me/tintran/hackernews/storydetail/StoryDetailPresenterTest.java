@@ -44,7 +44,7 @@ public class StoryDetailPresenterTest {
   @Test public void doShowListCommentsOnLoadSuccess() throws Exception {
     actionsListener.attachView(view);
     actionsListener.loadComments();
-    verify(view).showStatusText(R.string.loading);
+    verify(view).showLoading();
     verify(commentListUseCase).getCommentList(eq(storyId), callbackArgumentCaptor.capture());
     callbackArgumentCaptor.getValue().onComplete(mockCommentList);
     verify(view).showCommentList(listArgumentCaptor.capture());

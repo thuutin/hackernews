@@ -111,6 +111,10 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     swipeRefreshLayout.setRefreshing(false);
   }
 
+  @Override public void showLoading() {
+    swipeRefreshLayout.setRefreshing(true);
+  }
+
   @Override public void refreshTopStories() {
     startSyncServiceWithUpdateTopStoriesAction();
   }
