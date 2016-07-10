@@ -1,9 +1,9 @@
 package me.tintran.hackernews;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
-import android.util.Log;
 import me.tintran.hackernews.data.StoryCommentContract;
 
 /**
@@ -11,6 +11,8 @@ import me.tintran.hackernews.data.StoryCommentContract;
  */
 public interface StoryCommentGateway {
   void insert(int storyId, int[] commentIds);
+
+  int[] getCommentIdsByStoryId(int storyId);
 
   public class SQLiteStoryCommentGateway implements StoryCommentGateway {
 
@@ -42,6 +44,21 @@ public interface StoryCommentGateway {
       } finally {
         sqLiteDatabase.endTransaction();
       }
+    }
+
+    @Override public int[] getCommentIdsByStoryId(int storyId) {
+      Cursor query = sqLiteDatabase.query(StoryCommentContract.StoryCommentColumns.TABLE_NAME, null,
+          StoryCommentContract.StoryCommentColumns.COLUMN_NAME_STORYID + " = ? ",
+          new String[] { String.valueOf(storyId) }, null, null, null);
+
+      final int[] commentIds = new int[query.getCount()];
+
+      for (int i = 0; i < query.getCount(); i++) {
+        query.moveToPosition(i);
+        commentIds[i] = query.getInt(query.getColumnIndex(StoryCommentContract.StoryCommentColumns.COLUMN_NAME_COMMENTID));
+      }
+      query.close();
+      return commentIds;
     }
   }
 }

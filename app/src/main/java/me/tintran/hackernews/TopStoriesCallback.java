@@ -16,10 +16,10 @@ public class TopStoriesCallback implements Callback<StoryItem> {
   private int storyId;
   private StoryGateway storyGateway;
   private StoryCommentGateway storyCommentGateway;
-  private OnReturn<Call<StoryItem>> callOnReturn;
+  private OnReturn callOnReturn;
 
   public TopStoriesCallback(int storyId, StoryGateway storyGateway,
-      StoryCommentGateway storyCommentGateway, OnReturn<Call<StoryItem>> callOnReturn) {
+      StoryCommentGateway storyCommentGateway, OnReturn callOnReturn) {
     this.storyId = storyId;
     this.storyGateway = storyGateway;
     this.storyCommentGateway = storyCommentGateway;
@@ -28,7 +28,7 @@ public class TopStoriesCallback implements Callback<StoryItem> {
 
   @Override public void onResponse(Call<StoryItem> call, Response<StoryItem> response) {
     StoryItem body = response.body();
-    storyGateway.insertStory(body.id, body.title, body.descendants, body.score, body.time,
+    storyGateway.insertStory(body.id, body.title, body.descendants, body.deleted, body.score, body.time,
         body.type, body.url);
     storyCommentGateway.insert(body.id, body.kids);
     callOnReturn.onReturn(call);
@@ -40,7 +40,7 @@ public class TopStoriesCallback implements Callback<StoryItem> {
     callOnReturn.onReturn(call);
   }
 
-  interface OnReturn<T> {
-    void onReturn(T t);
+  interface OnReturn {
+    void onReturn(Call<StoryItem> onReturn);
   }
 }

@@ -29,6 +29,7 @@ public interface HackerNewsApi {
     public int descendants;
     public int score;
     public String by;
+    public boolean deleted;
     public int[] kids;
     public String title;
     public long time;
@@ -52,6 +53,7 @@ public interface HackerNewsApi {
     public int id;
     public String by;
     public int[] kids;
+    public boolean deleted;
     public int parent;
     public String text;
     public long time;

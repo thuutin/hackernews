@@ -15,5 +15,6 @@ public class CommentContract {
     public static final String COLUMN_NAME_PARENT = "parent";
     public static final String COLUMN_NAME_TIME = "time";
     public static final String COLUMN_NAME_TYPE = "type";
+    public static final String COLUMN_NAME_DELETED = "deleted";
   }
 }

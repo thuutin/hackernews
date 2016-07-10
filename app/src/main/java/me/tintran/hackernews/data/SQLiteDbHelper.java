@@ -23,6 +23,7 @@ public class SQLiteDbHelper extends SQLiteOpenHelper {
           StoryContract.StoryColumns.COLUMN_NAME_SCORE + INT_TYPE + COMMA_SEP +
           StoryContract.StoryColumns.COLUMN_NAME_TIME + INT_TYPE + COMMA_SEP +
           StoryContract.StoryColumns.COLUMN_NAME_TYPE + TEXT_TYPE + COMMA_SEP +
+          StoryContract.StoryColumns.COLUMN_NAME_DELETED + INT_TYPE + COMMA_SEP +
           StoryContract.StoryColumns.COLUMN_NAME_URL + TEXT_TYPE +
           " )";
 
@@ -38,6 +39,7 @@ public class SQLiteDbHelper extends SQLiteOpenHelper {
           CommentContract.CommentColumns.COLUMN_NAME_BY + TEXT_TYPE + COMMA_SEP +
           CommentContract.CommentColumns.COLUMN_NAME_PARENT + INT_TYPE + COMMA_SEP +
           CommentContract.CommentColumns.COLUMN_NAME_TEXT + TEXT_TYPE + COMMA_SEP +
+          CommentContract.CommentColumns.COLUMN_NAME_DELETED + INT_TYPE + COMMA_SEP +
           CommentContract.CommentColumns.COLUMN_NAME_TIME + INT_TYPE + COMMA_SEP +
           CommentContract.CommentColumns.COLUMN_NAME_TYPE + TEXT_TYPE +
           " )";
