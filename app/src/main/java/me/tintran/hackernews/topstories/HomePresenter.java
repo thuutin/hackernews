@@ -21,8 +21,6 @@ final class HomePresenter implements HomeContract.ActionsListener, TopStoriesUse
 
   @Override public void attachView(HomeContract.View view) {
     this.view = view;
-    view.showStatusText(R.string.loading);
-    topStoriesUseCase.getTopStories(this);
   }
 
   @Override public void detachView() {
@@ -35,10 +33,25 @@ final class HomePresenter implements HomeContract.ActionsListener, TopStoriesUse
     }
     if (stories.size() == 0) {
       view.showStatusText(R.string.no_stories);
+      view.hideLoading();
     } else {
       view.showItem(stories);
       view.hideStatusText();
+      view.hideLoading();
     }
+  }
+
+  @Override public void onResume() {
+    view.registerReceiver();
+  }
+
+  @Override public void onPause() {
+    view.unregisterReceiver();
+  }
+
+  @Override public void loadTopStories() {
+    view.showStatusText(R.string.loading);
+    topStoriesUseCase.getTopStories(this);
   }
 
   @Override public void onError(int code) {
@@ -46,7 +59,12 @@ final class HomePresenter implements HomeContract.ActionsListener, TopStoriesUse
       return;
     }
     final int stringRes = R.string.error_load_stories;
+    view.hideLoading();
     view.showStatusText(stringRes);
+  }
+
+  @Override public void onSwipeToRefresh() {
+    view.refreshTopStories();
   }
 
   @Override public void onStoryClicked(Story story) {

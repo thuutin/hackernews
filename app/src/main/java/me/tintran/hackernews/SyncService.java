@@ -28,6 +28,7 @@ public class SyncService extends Service {
 
   public static final String STORY_ID = "storyId";
   public static final String DONE_DOWNLOAD_COMMENTS = "DONE_DOWNLOAD_COMMENTS";
+  public static final String DONE_DOWNLOAD_STORIES = "DONE_DOWNLOAD_STORIES";
 
   private Handler serviceHandler;
 
@@ -53,10 +54,16 @@ public class SyncService extends Service {
             stopSelf();
           }
 
-          @Override public void notifyComplete(int storyId) {
+          @Override public void notifyLoadingCommentComplete(int storyId) {
             Intent intent = new Intent();
             intent.setAction(DONE_DOWNLOAD_COMMENTS);
             intent.setType("comment/" + storyId);
+            LocalBroadcastManager.getInstance(SyncService.this).sendBroadcast(intent);
+          }
+
+          @Override public void notifyLoadingTopStoryComplete() {
+            Intent intent = new Intent();
+            intent.setAction(DONE_DOWNLOAD_STORIES);
             LocalBroadcastManager.getInstance(SyncService.this).sendBroadcast(intent);
           }
         });
@@ -107,4 +114,5 @@ public class SyncService extends Service {
     super.onDestroy();
     Log.d(SyncService.class.getSimpleName(), "Hello + I am done");
   }
+
 }

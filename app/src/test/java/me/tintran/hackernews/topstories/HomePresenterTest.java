@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.anyChar;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -23,13 +24,14 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 public class HomePresenterTest {
   final List<Story> mockStories = new ArrayList<>(3);
 
-  HomePresenter homePresenter;
+  HomeContract.ActionsListener homePresenter;
   @Mock HomeContract.View view;
   @Mock TopStoriesUseCase topStoriesUseCase;
 
   @Captor ArgumentCaptor<TopStoriesUseCase.Callback> callbackArgumentCaptor;
   @Captor ArgumentCaptor<List<Story>> listArgumentCaptor;
   @Captor ArgumentCaptor<Story> itemCaptor;
+
   @Before public void setUp() throws Exception {
     MockitoAnnotations.initMocks(this);
     homePresenter = new HomePresenter(topStoriesUseCase);
@@ -99,5 +101,12 @@ public class HomePresenterTest {
     homePresenter.detachView();
     callbackArgumentCaptor.getValue().onComplete(mockStories);
     verifyNoMoreInteractions(view);
+  }
+
+  @Test public void onSwipeToRefresh_doCallRefresh() throws Exception {
+    homePresenter.attachView(view);
+    homePresenter.onSwipeToRefresh();
+    verify(view).refreshTopStories();
+
   }
 }

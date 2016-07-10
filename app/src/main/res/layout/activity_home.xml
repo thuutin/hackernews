@@ -11,20 +11,31 @@
     tools:context="me.tintran.hackernews.topstories.HomeActivity"
     >
   <include layout="@layout/toolbar"/>
-
-  <TextView
-      android:id="@+id/statusTextView"
+  <android.support.v4.widget.SwipeRefreshLayout
+      android:id="@+id/swipeRefreshLayout"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:gravity="center"
-      android:text="@string/no_stories"
-      />
+      >
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+      <TextView
+          android:id="@+id/statusTextView"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:gravity="center"
+          android:text="@string/no_stories"
+          />
 
-  <android.support.v7.widget.RecyclerView
-      android:id="@+id/storiesList"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      app:layoutManager="LinearLayoutManager"
-      />
+      <android.support.v7.widget.RecyclerView
+          android:id="@+id/storiesList"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          app:layoutManager="LinearLayoutManager"
+          />
+    </FrameLayout>
+
+  </android.support.v4.widget.SwipeRefreshLayout>
 
 </LinearLayout>

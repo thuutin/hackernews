@@ -8,23 +8,16 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.support.annotation.WorkerThread;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.util.SparseArray;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import me.tintran.hackernews.data.CommentContract;
 import me.tintran.hackernews.data.CommentContract.CommentColumns;
 import me.tintran.hackernews.data.HackerNewsApi;
 import me.tintran.hackernews.data.StoryCommentContract;
 import me.tintran.hackernews.data.StoryContract;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 /**
@@ -33,7 +26,7 @@ import retrofit2.Response;
 
 public final class ServiceHandler extends Handler {
 
-  static final int DOWNLOAD_TOP_STORIES = 10001;
+  static final int DOWNLOAD_TOP_STORIES = -1;
   static final int DOWNLOAD_COMMENT_FOR_STORY = 10002;
 
   private SQLiteDatabase sqLiteDatabase;
@@ -94,10 +87,11 @@ public final class ServiceHandler extends Handler {
               new TopStoriesCallback(itemId, storyGateway, storyCommentGateway,
                   new TopStoriesCallback.OnReturn<Call<HackerNewsApi.StoryItem>>() {
                     @Override public void onReturn(Call<HackerNewsApi.StoryItem> call) {
-                      callList.get(DOWNLOAD_TOP_STORIES).add(call);
-                      stopServiceIfNeeded(-1); // TODO
+                      callList.get(DOWNLOAD_TOP_STORIES).remove(call);
+                      stopServiceIfNeeded();
                     }
                   });
+          callList.get(DOWNLOAD_TOP_STORIES).add(storyItemCall);
           storyItemCall.enqueue(callback);
         }
         break;
@@ -109,14 +103,19 @@ public final class ServiceHandler extends Handler {
             sqLiteDatabase.query(StoryCommentContract.StoryCommentColumns.TABLE_NAME, null,
                 StoryCommentContract.StoryCommentColumns.COLUMN_NAME_STORYID + " = ? ",
                 new String[] { storyId.toString() }, null, null, null);
-        int count = query.getCount();
+        final int count = query.getCount();
         Log.d("CommentDownloadService", "loading comments " + count + " items");
-        for (int i = 0; i < query.getCount(); i++) {
+        for (int i = 0; i < count; i++) {
           query.moveToPosition(i);
           final int commentId = query.getInt(
               query.getColumnIndex(StoryCommentContract.StoryCommentColumns.COLUMN_NAME_COMMENTID));
           final Call<HackerNewsApi.CommentItem> comment = commentsApi.getComment(commentId);
-          callList.get(DOWNLOAD_COMMENT_FOR_STORY).add(comment);
+          List<Call> calls = callList.get(storyId);
+          if (calls == null) {
+            calls = new ArrayList<>(count);
+            callList.put(storyId, calls);
+          }
+          calls.add(comment);
           comment.enqueue(new retrofit2.Callback<HackerNewsApi.CommentItem>() {
             @Override public void onResponse(Call<HackerNewsApi.CommentItem> call,
                 Response<HackerNewsApi.CommentItem> response) {
@@ -129,18 +128,17 @@ public final class ServiceHandler extends Handler {
               contentValues.put(CommentColumns.COLUMN_NAME_TIME, commentItem.time);
               contentValues.put(CommentColumns.COLUMN_NAME_TYPE, commentItem.type);
               contentValues.put(CommentColumns.COLUMN_NAME_TYPE, commentItem.type);
-
+              callList.get(storyId).remove(call);
               sqLiteDatabase.insertWithOnConflict(CommentColumns.TABLE_NAME, null, contentValues,
                   SQLiteDatabase.CONFLICT_REPLACE);
-              callList.get(DOWNLOAD_COMMENT_FOR_STORY).remove(call);
               Log.d("CommentDownloadService", "Done loading comment" + commentId);
-              stopServiceIfNeeded(storyId);
+              stopServiceIfNeeded();
             }
 
             @Override public void onFailure(Call<HackerNewsApi.CommentItem> call, Throwable t) {
-              callList.get(DOWNLOAD_COMMENT_FOR_STORY).remove(call);
+              callList.get(storyId).remove(call);
               Log.d("CommentDownloadService", "failed loading " + commentId);
-              stopServiceIfNeeded(storyId);
+              stopServiceIfNeeded();
             }
           });
         }
@@ -152,7 +150,7 @@ public final class ServiceHandler extends Handler {
     }
   }
 
-  private void stopServiceIfNeeded(int storyId) {
+  private void stopServiceIfNeeded() {
     int size = callList.size();
     boolean isAllEmpty = true;
     for (int i = 0; i < size; i++) {
@@ -160,7 +158,11 @@ public final class ServiceHandler extends Handler {
       if (!callList.get(keyAtI).isEmpty()) {
         isAllEmpty = false;
       } else {
-        stopListener.notifyComplete(storyId);
+        if (keyAtI == DOWNLOAD_TOP_STORIES) {
+          stopListener.notifyLoadingTopStoryComplete();
+        } else {
+          stopListener.notifyLoadingCommentComplete(keyAtI);
+        }
       }
     }
 

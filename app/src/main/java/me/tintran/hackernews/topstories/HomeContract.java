@@ -19,6 +19,14 @@ interface HomeContract {
     void showItem(List<Story> itemsList);
 
     void gotoStoryDetail(Story story);
+
+    void refreshTopStories();
+
+    void registerReceiver();
+
+    void unregisterReceiver();
+
+    void hideLoading();
   }
 
   interface ActionsListener {
@@ -29,6 +37,14 @@ interface HomeContract {
     void attachView(HomeContract.View view);
 
     void onStoryClicked(Story story);
+
+    void onSwipeToRefresh();
+
+    void onResume();
+
+    void onPause();
+
+    void loadTopStories();
   }
 
 }

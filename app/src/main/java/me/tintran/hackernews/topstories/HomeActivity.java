@@ -1,7 +1,12 @@
 package me.tintran.hackernews.topstories;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.support.annotation.StringRes;
+import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
@@ -14,6 +19,7 @@ import me.tintran.hackernews.SyncService;
 import me.tintran.hackernews.data.Story;
 import me.tintran.hackernews.StoriesRepository;
 import me.tintran.hackernews.storydetail.StoryDetailActivity;
+import org.mockito.cglib.core.Local;
 
 public class HomeActivity extends AppCompatActivity implements HomeContract.View {
 
@@ -21,6 +27,8 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
   private StoriesAdapter storiesAdapter;
   private HomeContract.ActionsListener actionsListener;
   private RecyclerView storiesList;
+  private BroadcastReceiver receiver;
+  private SwipeRefreshLayout swipeRefreshLayout;
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -28,7 +36,13 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
     setSupportActionBar(toolbar);
     statusText = (TextView) findViewById(R.id.statusTextView);
-
+    swipeRefreshLayout =
+        ((SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout));
+    swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+      @Override public void onRefresh() {
+        actionsListener.onSwipeToRefresh();
+      }
+    });
     this.storiesList = (RecyclerView) findViewById(R.id.storiesList);
     storiesAdapter = new StoriesAdapter(new StoriesAdapter.OnStoryClick() {
       @Override public void onClick(Story story) {
@@ -38,10 +52,33 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     storiesList.setAdapter(storiesAdapter);
     actionsListener = new HomePresenter(new StoriesRepository(this));
     actionsListener.attachView(this);
+    actionsListener.loadTopStories();
+    startSyncServiceWithUpdateTopStoriesAction();
+  }
 
-    Intent intent = new Intent(this, SyncService.class);
-    intent.setAction(SyncService.UPDATE_TOP_STORIES);
-    startService(intent);
+  @Override protected void onResume() {
+    actionsListener.onResume();
+    super.onResume();
+  }
+
+  @Override protected void onPause() {
+    actionsListener.onPause();
+    super.onPause();
+  }
+
+  @Override public void registerReceiver() {
+    receiver = new BroadcastReceiver() {
+      @Override public void onReceive(Context context, Intent intent) {
+        actionsListener.loadTopStories();
+      }
+    };
+    IntentFilter intentFilter = new IntentFilter();
+    intentFilter.addAction(SyncService.DONE_DOWNLOAD_STORIES);
+    LocalBroadcastManager.getInstance(this).registerReceiver(receiver, intentFilter);
+  }
+
+  @Override public void unregisterReceiver() {
+    LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
   }
 
   @Override protected void onDestroy() {
@@ -69,5 +106,19 @@ public class HomeActivity extends AppCompatActivity implements HomeContract.View
     intent.putExtra(StoryDetailActivity.STORY_ID, story.id);
     intent.putExtra(StoryDetailActivity.STORY_TITLE, story.title);
     startActivity(intent);
+  }
+
+  @Override public void hideLoading() {
+    swipeRefreshLayout.setRefreshing(false);
+  }
+
+  @Override public void refreshTopStories() {
+    startSyncServiceWithUpdateTopStoriesAction();
+  }
+
+  private void startSyncServiceWithUpdateTopStoriesAction() {
+    Intent intent = new Intent(this, SyncService.class);
+    intent.setAction(SyncService.UPDATE_TOP_STORIES);
+    startService(intent);
   }
 }
