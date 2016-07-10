@@ -65,6 +65,9 @@ public final class ServiceHandler extends Handler {
 
       case DOWNLOAD_COMMENT_FOR_STORY:
         final int storyId = (Integer) msg.obj;
+        if (commentCommands.get(storyId) != null){
+          return;
+        }
         StoryCommentGateway storyCommentGateway = new SQLiteStoryCommentGateway(sqLiteDatabase);
         CommentGateway commentGateway = new CommentGateway.SQLiteCommentGateway(sqLiteDatabase);
         Command commentProcessor =
