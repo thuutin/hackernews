@@ -116,6 +116,7 @@ public class StoryDetailActivity extends AppCompatActivity implements StoryDetai
 
   @Override public void showLoading() {
     swipeRefreshLayout.setRefreshing(true);
+    commentList.setVisibility(View.VISIBLE);
   }
 
   @Override public void hideLoading() {

@@ -3,4 +3,6 @@
   <string name="no_stories">No Stories found.</string>
   <string name="error_load_stories">Error loading Stories</string>
   <string name="error_load_comments">Error loading comments</string>
+  <string name="no_comments">No Comments</string>
+  <string name="loading_comments">Loading Comments</string>
 </resources>

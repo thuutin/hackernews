@@ -10,6 +10,8 @@ import me.tintran.hackernews.data.TopStoriesUseCase;
 
 public class StoriesRepository implements TopStoriesUseCase, CommentListUseCase {
 
+  public static final int NO_COMMENT = 2000;
+  public static final int LOADING_COMMENTS = 2001;
   private Context context;
 
   public StoriesRepository(Context context) {
@@ -24,5 +26,16 @@ public class StoriesRepository implements TopStoriesUseCase, CommentListUseCase 
     GetCommentListAsyncTask getCommentListAsyncTask =
         new GetCommentListAsyncTask(context, callback);
     getCommentListAsyncTask.execute(storyId);
+  }
+
+  public int getErrorString(int code){
+    switch (code){
+      case NO_COMMENT:
+        return R.string.no_comments;
+      case LOADING_COMMENTS:
+        return R.string.loading_comments;
+      default:
+        throw new IllegalStateException("Code not supported: " + code);
+    }
   }
 }

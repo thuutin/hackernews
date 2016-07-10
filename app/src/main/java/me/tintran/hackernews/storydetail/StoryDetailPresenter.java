@@ -60,7 +60,13 @@ class StoryDetailPresenter
     if (v == null) {
       return;
     }
-    v.hideLoading();
-    v.showStatusText(R.string.error_load_comments);
+
+    int errorStringRes = commentListUseCase.getErrorString(code);
+    if (errorStringRes == R.string.loading_comments){
+      v.showLoading();
+    } else {
+      v.hideLoading();
+      v.showStatusText(errorStringRes);
+    }
   }
 }

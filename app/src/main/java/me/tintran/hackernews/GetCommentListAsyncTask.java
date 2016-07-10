@@ -45,9 +45,12 @@ class GetCommentListAsyncTask extends AsyncTask<Integer, Void, List<Comment>> {
       return;
     }
     if (comments == null) {
-      callback.get().onError(1);
-    } else {
+      callback.get().onError(StoriesRepository.NO_COMMENT);
+    } else if (!comments.isEmpty()){
       callback.get().onComplete(comments);
+    } else {
+      callback.get().onError(StoriesRepository.LOADING_COMMENTS);
     }
   }
+
 }

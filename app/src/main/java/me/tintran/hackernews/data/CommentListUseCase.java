@@ -9,6 +9,8 @@ import me.tintran.hackernews.storydetail.Comment;
 public interface CommentListUseCase {
   void getCommentList(int storyId, CommentListUseCase.Callback callback);
 
+  int getErrorString(int code);
+
   interface Callback {
     void onComplete(List<Comment> commentList);
     void onError(int code);

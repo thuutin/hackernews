@@ -41,6 +41,17 @@ public interface CommentGateway {
     }
 
     @Override public List<Comment> getCommentsForStory(int storyId) {
+      // Checking whether this story has any Comments;
+      // If this cursor has count > 0, then this story has comment but not downloaded yet
+      Cursor commentByStory =
+          sqLiteDatabase.query(StoryCommentContract.StoryCommentColumns.TABLE_NAME, null, StoryCommentContract.StoryCommentColumns.COLUMN_NAME_STORYID + " = ?" ,
+              new String[] {String.valueOf(storyId)}, null, null, null);
+      if (commentByStory.getCount() == 0){
+        commentByStory.close();
+        return null;
+      }
+
+
       String[] projection = {
           CommentContract.CommentColumns.COLUMN_NAME_TEXT, CommentContract.CommentColumns.TABLE_NAME + "." + CommentContract.CommentColumns._ID
       };
