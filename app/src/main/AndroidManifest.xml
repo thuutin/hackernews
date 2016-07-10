@@ -25,7 +25,7 @@
           android:value=".topstories.HomeActivity" />
     </activity>
 
-    <service android:name=".SyncService" />
+    <service android:name=".sync.SyncService" />
   </application>
 
 </manifest>

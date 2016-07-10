@@ -15,11 +15,10 @@ import android.view.View;
 import android.widget.TextView;
 import java.util.List;
 import me.tintran.hackernews.R;
-import me.tintran.hackernews.SyncService;
+import me.tintran.hackernews.sync.SyncService;
 import me.tintran.hackernews.data.Story;
 import me.tintran.hackernews.StoriesRepository;
 import me.tintran.hackernews.storydetail.StoryDetailActivity;
-import org.mockito.cglib.core.Local;
 
 public class HomeActivity extends AppCompatActivity implements HomeContract.View {
 

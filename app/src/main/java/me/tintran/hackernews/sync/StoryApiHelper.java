@@ -1,4 +1,4 @@
-package me.tintran.hackernews;
+package me.tintran.hackernews.sync;
 
 import java.io.IOException;
 import me.tintran.hackernews.data.HackerNewsApi;

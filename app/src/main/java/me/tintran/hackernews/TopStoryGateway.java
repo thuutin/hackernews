@@ -16,14 +16,14 @@ import me.tintran.hackernews.data.TopStoriesContract;
 /**
  * Created by tin on 7/9/16.
  */
-interface TopStoryGateway {
+public interface TopStoryGateway {
   @WorkerThread void replaceTopStoryIds(int[] topstoryids);
 
   class SQLiteTopStoryGateway implements TopStoryGateway {
 
     private SQLiteDatabase sqLiteDatabase;
 
-    SQLiteTopStoryGateway(SQLiteDatabase sqLiteDatabase) {
+    public SQLiteTopStoryGateway(SQLiteDatabase sqLiteDatabase) {
       this.sqLiteDatabase = sqLiteDatabase;
     }
 

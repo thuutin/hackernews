@@ -1,4 +1,4 @@
-package me.tintran.hackernews;
+package me.tintran.hackernews.sync;
 
 import android.database.Cursor;
 import java.util.ArrayList;

@@ -1,7 +1,8 @@
-package me.tintran.hackernews;
+package me.tintran.hackernews.sync;
 
 import android.util.Log;
 import java.util.ArrayList;
+import me.tintran.hackernews.StoryCommentGateway;
 import me.tintran.hackernews.data.CommentGateway;
 import me.tintran.hackernews.data.HackerNewsApi;
 import retrofit2.Call;

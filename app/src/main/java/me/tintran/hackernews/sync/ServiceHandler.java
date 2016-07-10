@@ -1,4 +1,4 @@
-package me.tintran.hackernews;
+package me.tintran.hackernews.sync;
 
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -7,7 +7,10 @@ import android.os.Looper;
 import android.os.Message;
 import android.support.annotation.WorkerThread;
 import android.util.SparseArray;
+import me.tintran.hackernews.StoryCommentGateway;
 import me.tintran.hackernews.StoryCommentGateway.SQLiteStoryCommentGateway;
+import me.tintran.hackernews.StoryGateway;
+import me.tintran.hackernews.TopStoryGateway;
 import me.tintran.hackernews.data.CommentGateway;
 import me.tintran.hackernews.data.HackerNewsApi;
 

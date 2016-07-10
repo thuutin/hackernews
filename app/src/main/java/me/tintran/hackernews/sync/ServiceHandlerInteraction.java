@@ -1,4 +1,4 @@
-package me.tintran.hackernews;
+package me.tintran.hackernews.sync;
 
 /**
  * Created by tin on 7/9/16.

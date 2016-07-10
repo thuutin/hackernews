@@ -3,7 +3,6 @@ package me.tintran.hackernews.storydetail;
 import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Canvas;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -15,7 +14,7 @@ import android.widget.TextView;
 import java.util.List;
 import me.tintran.hackernews.R;
 import me.tintran.hackernews.StoriesRepository;
-import me.tintran.hackernews.SyncService;
+import me.tintran.hackernews.sync.SyncService;
 
 /**
  * Created by tin on 7/7/16.

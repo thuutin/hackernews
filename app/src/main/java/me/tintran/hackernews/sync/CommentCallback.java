@@ -1,4 +1,4 @@
-package me.tintran.hackernews;
+package me.tintran.hackernews.sync;
 
 import android.util.Log;
 import me.tintran.hackernews.data.CommentGateway;

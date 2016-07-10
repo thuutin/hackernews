@@ -1,21 +1,17 @@
 package me.tintran.hackernews;
 
-import android.hardware.camera2.CameraCaptureSession;
-import java.io.IOException;
 import java.util.List;
 import me.tintran.hackernews.data.HackerNewsApi;
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
+import me.tintran.hackernews.sync.StoryApiHelper;
+import me.tintran.hackernews.sync.TopStoriesCallback;
+import me.tintran.hackernews.sync.TopStoryProcessor;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.Spy;
-import org.mockito.exceptions.base.MockitoException;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -24,11 +20,9 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.doCallRealMethod;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;

@@ -1,9 +1,11 @@
-package me.tintran.hackernews;
+package me.tintran.hackernews.sync;
 
 import android.support.annotation.VisibleForTesting;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import me.tintran.hackernews.StoryCommentGateway;
+import me.tintran.hackernews.StoryGateway;
+import me.tintran.hackernews.TopStoryGateway;
 import me.tintran.hackernews.data.HackerNewsApi;
 import retrofit2.Call;
 

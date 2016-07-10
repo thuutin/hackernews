@@ -16,7 +16,7 @@ import me.tintran.hackernews.data.TopStoriesContract;
  * Created by tin on 7/9/16.
  */
 
-interface StoryGateway {
+public interface StoryGateway {
 
   void insertStory(int id, String title, int descendants, boolean deleted, int score, long time,
       String type, String url);
