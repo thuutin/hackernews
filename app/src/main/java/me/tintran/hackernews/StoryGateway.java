@@ -23,6 +23,8 @@ interface StoryGateway {
 
   @WorkerThread List<Story> getTopStories();
 
+  @WorkerThread int[] getLocalTopStoryIds();
+
   class SqliteStoryGateway implements StoryGateway {
     private SQLiteDatabase sqLiteDatabase;
 
@@ -76,6 +78,20 @@ interface StoryGateway {
       query.close();
       sqLiteDatabase.close();
       return results;
+    }
+
+    @WorkerThread @Override public int[] getLocalTopStoryIds() {
+      Cursor storiesIdsFromDatabase = sqLiteDatabase.query(StoryContract.StoryColumns.TABLE_NAME,
+          new String[] { StoryContract.StoryColumns._ID }, null, null, null, null, null);
+      int count = storiesIdsFromDatabase.getCount();
+      int[] ids = new int[count];
+      for (int i = 0; i < count; i++) {
+        storiesIdsFromDatabase.moveToPosition(i);
+        int idColumnIndex = storiesIdsFromDatabase.getColumnIndex(StoryContract.StoryColumns._ID);
+        ids[i] = storiesIdsFromDatabase.getInt(idColumnIndex);
+      }
+      storiesIdsFromDatabase.close();
+      return ids;
     }
   }
 }

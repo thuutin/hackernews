@@ -49,7 +49,7 @@ public final class ServiceHandler extends Handler {
         StoryGateway storyGateway = new StoryGateway.SqliteStoryGateway(sqLiteDatabase);
         StoryCommentGateway storyCommentGateway = new SQLiteStoryCommentGateway(sqLiteDatabase);
         topStoryProcessor =
-            new TopStoryProcessor(storiesApi, storyGateway, topStoryGateway, storyCommentGateway,
+            new TopStoryProcessor(new StoryApiHelper.StoryApiHelperImpl(storiesApi), storyGateway, topStoryGateway, storyCommentGateway,
                 new TopStoryProcessor.Callback() {
                   @Override public void onComplete() {
                     topStoryProcessor = null;
@@ -59,7 +59,7 @@ public final class ServiceHandler extends Handler {
         topStoryProcessor.execute();
         break;
       }
-      
+
 
       case DOWNLOAD_COMMENT_FOR_STORY:
         final int storyId = (Integer) msg.obj;

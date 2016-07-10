@@ -1,5 +1,6 @@
 package me.tintran.hackernews;
 
+import android.support.annotation.VisibleForTesting;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,16 +12,16 @@ import retrofit2.Call;
  */
 public class TopStoryProcessor implements Command {
 
-  private final HackerNewsApi.Stories storiesApi;
+  private StoryApiHelper storiesApiHelper;
   private StoryGateway storyGateway;
   private final TopStoryGateway topStoryGateway;
   private StoryCommentGateway storyCommentGateway;
   private Callback callback;
-  private List<Call> callList;
+  private List<Integer> callList;
 
-  public TopStoryProcessor(HackerNewsApi.Stories storiesApi, StoryGateway storyGateway,
+  public TopStoryProcessor(StoryApiHelper storiesApiHelper, StoryGateway storyGateway,
       TopStoryGateway topStoryGateway, StoryCommentGateway storyCommentGateway, Callback callback) {
-    this.storiesApi = storiesApi;
+    this.storiesApiHelper = storiesApiHelper;
     this.storyGateway = storyGateway;
     this.topStoryGateway = topStoryGateway;
     this.storyCommentGateway = storyCommentGateway;
@@ -31,50 +32,40 @@ public class TopStoryProcessor implements Command {
     refreshTopStories();
   }
 
+  @VisibleForTesting
   private void refreshTopStories() {
-    Call<int[]> topStories = storiesApi.getTopStories();
-    int[] topStoryIds = null;
-    try {
-      topStoryIds = topStories.execute().body();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    int[] topStoryIds = storiesApiHelper.getTopStoryIds();
     if (topStoryIds == null) {
       callback.onComplete();
       return;
     }
-
     topStoryGateway.replaceTopStoryIds(topStoryIds);
 
-    Call<int[]> updatedStoriesCall = storiesApi.getUpdatedStories();
-    int[] updatedStories = null;
-    try {
-      updatedStories = updatedStoriesCall.execute().body();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    int[] updatedStories = storiesApiHelper.getUpdatedStoryIds();
     if (updatedStories == null){
       callback.onComplete();
       return;
     }
-    final int[] localIdsFromDatabase = topStoryGateway.getLocalTopStoryIds();
-    StoryHelper storyHelper = new StoryHelper(topStoryIds, updatedStories, localIdsFromDatabase);
+    final int[] localIdsFromDatabase = storyGateway.getLocalTopStoryIds();
     // Retrieve and insert the stories
-    int[] idsToRetrieve = storyHelper.getIdsToRetrieve();
+    int[] idsToRetrieve = getIdsToRetrieve(topStoryIds, updatedStories, localIdsFromDatabase);
     callList = new ArrayList<>(idsToRetrieve.length);
     for (final int itemId : idsToRetrieve) {
-      final Call<HackerNewsApi.StoryItem> storyItemCall = storiesApi.getStory(itemId);
+      callList.add(itemId);
       TopStoriesCallback topStoriesCallback =
           new TopStoriesCallback(itemId, storyGateway, storyCommentGateway,
               new TopStoriesCallback.OnReturn() {
                 @Override public void onReturn(Call<HackerNewsApi.StoryItem> call) {
-                  callList.remove(call);
+                  callList.remove(Integer.valueOf(itemId));
                   stopServiceIfNeeded();
                 }
               });
-      callList.add(storyItemCall);
-      storyItemCall.enqueue(topStoriesCallback);
+      storiesApiHelper.getStory(itemId, topStoriesCallback);
     }
+  }
+
+  int[] getIdsToRetrieve(int[] topStoryIds, int[] updatedIds, int[] storyIdsFromDatabase){
+    return topStoryIds;
   }
 
   private void stopServiceIfNeeded() {

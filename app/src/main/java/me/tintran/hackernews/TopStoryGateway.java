@@ -16,17 +16,14 @@ import me.tintran.hackernews.data.TopStoriesContract;
 /**
  * Created by tin on 7/9/16.
  */
-public interface TopStoryGateway {
+interface TopStoryGateway {
   @WorkerThread void replaceTopStoryIds(int[] topstoryids);
-
-  @WorkerThread int[] getLocalTopStoryIds();
-
 
   class SQLiteTopStoryGateway implements TopStoryGateway {
 
     private SQLiteDatabase sqLiteDatabase;
 
-    public SQLiteTopStoryGateway(SQLiteDatabase sqLiteDatabase) {
+    SQLiteTopStoryGateway(SQLiteDatabase sqLiteDatabase) {
       this.sqLiteDatabase = sqLiteDatabase;
     }
 
@@ -40,29 +37,15 @@ public interface TopStoryGateway {
       try {
         sqLiteDatabase.delete(TopStoriesContract.StoryColumns.TABLE_NAME, null, null);
         ContentValues contentValues = new ContentValues();
-        for (int topstoryid : topstoryids) {
+        for (int topStoryId : topstoryids) {
           contentValues.clear();
-          contentValues.put(TopStoriesContract.StoryColumns.STORYID, topstoryid);
+          contentValues.put(TopStoriesContract.StoryColumns.STORYID, topStoryId);
           sqLiteDatabase.insert(TopStoriesContract.StoryColumns.TABLE_NAME, null, contentValues);
         }
         sqLiteDatabase.setTransactionSuccessful();
       } finally {
         sqLiteDatabase.endTransaction();
       }
-    }
-
-    @WorkerThread @Override public int[] getLocalTopStoryIds() {
-      Cursor storiesIdsFromDatabase = sqLiteDatabase.query(StoryContract.StoryColumns.TABLE_NAME,
-          new String[] { StoryContract.StoryColumns._ID }, null, null, null, null, null);
-      int count = storiesIdsFromDatabase.getCount();
-      int[] ids = new int[count];
-      for (int i = 0; i < count; i++) {
-        storiesIdsFromDatabase.moveToPosition(i);
-        int idColumnIndex = storiesIdsFromDatabase.getColumnIndex(StoryContract.StoryColumns._ID);
-        ids[i] = storiesIdsFromDatabase.getInt(idColumnIndex);
-      }
-      storiesIdsFromDatabase.close();
-      return ids;
     }
   }
 }
