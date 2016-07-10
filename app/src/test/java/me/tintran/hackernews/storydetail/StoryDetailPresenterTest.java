@@ -57,4 +57,17 @@ public class StoryDetailPresenterTest {
       assertEquals(actual.id, expected.id);
     }
   }
+
+  @Test public void doRegisterBroadcastReceiverOnResume() throws Exception {
+    actionsListener.attachView(view);
+    actionsListener.onResume();
+    verify(view).registerReceiver();
+  }
+
+  @Test public void doUnRegisterBroadcastReceiverOnPause() throws Exception {
+    actionsListener.attachView(view);
+    actionsListener.onPause();
+    verify(view).unregisterReceiver();
+
+  }
 }

@@ -16,10 +16,10 @@ public class CommentDownloadCompleteBroadcastReceiver extends BroadcastReceiver 
   }
 
   @Override public void onReceive(Context context, Intent intent) {
-    reloadComment.loadComment();
+    reloadComment.loadComments();
   }
 
   interface ReloadComment {
-    void loadComment();
+    void loadComments();
   }
 }

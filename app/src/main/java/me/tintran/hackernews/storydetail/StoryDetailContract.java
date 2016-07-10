@@ -17,6 +17,10 @@ public interface StoryDetailContract {
 
     void showLoading();
     void hideLoading();
+
+    void unregisterReceiver();
+
+    void registerReceiver();
   }
 
   interface ActionsListener {
@@ -25,6 +29,10 @@ public interface StoryDetailContract {
 
     void attachView(View view);
 
-    void loadComments();
+    void onPause();
+
+    void onResume();
+
+    void onReceiverFired();
   }
 }

@@ -7,14 +7,18 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 import android.widget.TextView;
 import java.util.List;
 import me.tintran.hackernews.R;
 import me.tintran.hackernews.StoriesRepository;
 import me.tintran.hackernews.sync.SyncService;
+
+import static android.view.View.GONE;
 
 /**
  * Created by tin on 7/7/16.
@@ -27,7 +31,10 @@ public class StoryDetailActivity extends AppCompatActivity implements StoryDetai
   private StoryDetailContract.ActionsListener actionsListener;
   private int storyId;
 
-  BroadcastReceiver broadcastReceiver;
+  private BroadcastReceiver broadcastReceiver;
+  private SwipeRefreshLayout swipeRefreshLayout;
+  private TextView statusTextView;
+  private RecyclerView commentList;
 
   @Override protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -40,14 +47,26 @@ public class StoryDetailActivity extends AppCompatActivity implements StoryDetai
     Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
     setSupportActionBar(toolbar);
     getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+    swipeRefreshLayout = ((SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout));
+    swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+      @Override public void onRefresh() {
+        startSyncServiceWithDownloadCommentsForStoryAction();
+      }
+    });
     final TextView storyTitleTextView = (TextView) findViewById(R.id.storyTitle);
     storyTitleTextView.setText(storyTitle);
 
-    final RecyclerView commentList = (RecyclerView) findViewById(R.id.commentList);
+    statusTextView = (TextView) findViewById(R.id.statusTextView);
+    commentList = (RecyclerView) findViewById(R.id.commentList);
     adapter = new CommentAdapter();
     adapter.setHasStableIds(true);
     commentList.setAdapter(adapter);
     actionsListener = new StoryDetailPresenter(storyId, new StoriesRepository(this));
+    startSyncServiceWithDownloadCommentsForStoryAction();
+  }
+
+  private void startSyncServiceWithDownloadCommentsForStoryAction() {
     Intent intent = new Intent(this, SyncService.class);
     intent.setAction(SyncService.DOWNLOAD_COMMENT_FOR_STORY);
     intent.putExtra(SyncService.STORY_ID, storyId);
@@ -57,28 +76,15 @@ public class StoryDetailActivity extends AppCompatActivity implements StoryDetai
   @Override protected void onStart() {
     super.onStart();
     actionsListener.attachView(this);
-    actionsListener.loadComments();
   }
 
   @Override protected void onResume() {
-    broadcastReceiver = new CommentDownloadCompleteBroadcastReceiver(new CommentDownloadCompleteBroadcastReceiver.ReloadComment() {
-      @Override public void loadComment() {
-        actionsListener.loadComments();
-      }
-    });
-    IntentFilter intentFilter = new IntentFilter();
-    intentFilter.addAction(SyncService.DONE_DOWNLOAD_COMMENTS);
-    try {
-      intentFilter.addDataType("comment/" + storyId);
-    } catch (IntentFilter.MalformedMimeTypeException e) {
-      e.printStackTrace();
-    }
-    LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, intentFilter);
+    actionsListener.onResume();
     super.onResume();
   }
 
   @Override protected void onPause() {
-    LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
+    actionsListener.onPause();
     super.onPause();
   }
 
@@ -87,20 +93,44 @@ public class StoryDetailActivity extends AppCompatActivity implements StoryDetai
     actionsListener.detachView();
   }
 
+  @Override public void unregisterReceiver() {
+    LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
+  }
+
+  @Override public void registerReceiver() {
+    broadcastReceiver = new CommentDownloadCompleteBroadcastReceiver(
+        new CommentDownloadCompleteBroadcastReceiver.ReloadComment() {
+          @Override public void loadComments() {
+            actionsListener.onReceiverFired();
+          }
+        });
+    IntentFilter intentFilter = new IntentFilter();
+    intentFilter.addAction(SyncService.DONE_DOWNLOAD_COMMENTS);
+    try {
+      intentFilter.addDataType("comment/" + storyId);
+    } catch (IntentFilter.MalformedMimeTypeException e) {
+      e.printStackTrace();
+    }
+    LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, intentFilter);
+  }
 
   @Override public void showLoading() {
-
+    swipeRefreshLayout.setRefreshing(true);
   }
 
   @Override public void hideLoading() {
-
+    swipeRefreshLayout.setRefreshing(false);
   }
 
   @Override public void showStatusText(@StringRes int statusRes) {
-
+    statusTextView.setText(statusRes);
+    statusTextView.setVisibility(View.VISIBLE);
+    commentList.setVisibility(View.INVISIBLE);
   }
 
   @Override public void showCommentList(List<Comment> comments) {
     adapter.swapData(comments);
+    statusTextView.setVisibility(GONE);
+    commentList.setVisibility(View.VISIBLE);
   }
 }

@@ -14,14 +14,35 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       />
-  <android.support.v7.widget.RecyclerView
-      android:layout_marginLeft="16dp"
-      android:layout_marginStart="16dp"
-      android:layout_marginTop="16dp"
-      android:id="@+id/commentList"
+
+  <android.support.v4.widget.SwipeRefreshLayout
+      android:id="@+id/swipeRefreshLayout"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      app:layoutManager="LinearLayoutManager"
       >
-  </android.support.v7.widget.RecyclerView>
+    <FrameLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      >
+      <TextView
+          android:id="@+id/statusTextView"
+          android:gravity="center"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          />
+      <android.support.v7.widget.RecyclerView
+          android:layout_marginLeft="16dp"
+          android:layout_marginStart="16dp"
+          android:layout_marginTop="16dp"
+          android:id="@+id/commentList"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          app:layoutManager="LinearLayoutManager"
+          >
+      </android.support.v7.widget.RecyclerView>
+    </FrameLayout>
+
+  </android.support.v4.widget.SwipeRefreshLayout>
+
+
 </LinearLayout>

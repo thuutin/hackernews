@@ -25,7 +25,17 @@ class StoryDetailPresenter
   }
 
   @Override public void detachView() {
+    view = null;
+  }
 
+  @Override public void onPause() {
+    view.unregisterReceiver();
+  }
+
+  @Override public void onResume() {
+    view.registerReceiver();
+    view.showLoading();
+    loadComments();
   }
 
   @Override public void onComplete(List<Comment> commentList) {
@@ -33,11 +43,15 @@ class StoryDetailPresenter
     if (v == null) {
       return;
     }
+    view.hideLoading();
     v.showCommentList(commentList);
   }
 
-  @Override public void loadComments() {
-    //view.showStatusText(R.string.loading);
+  @Override public void onReceiverFired() {
+    loadComments();
+  }
+
+  private void loadComments() {
     commentListUseCase.getCommentList(storyId, this);
   }
 
@@ -46,6 +60,7 @@ class StoryDetailPresenter
     if (v == null) {
       return;
     }
+    v.hideLoading();
     v.showStatusText(R.string.error_load_comments);
   }
 }
