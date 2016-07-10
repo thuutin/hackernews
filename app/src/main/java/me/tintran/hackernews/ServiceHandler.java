@@ -59,6 +59,7 @@ public final class ServiceHandler extends Handler {
         topStoryProcessor.execute();
         break;
       }
+      
 
       case DOWNLOAD_COMMENT_FOR_STORY:
         final int storyId = (Integer) msg.obj;

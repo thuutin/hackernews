@@ -40,6 +40,7 @@ public class TopStoryProcessor implements Command {
       e.printStackTrace();
     }
     if (topStoryIds == null) {
+      callback.onComplete();
       return;
     }
 
@@ -51,6 +52,10 @@ public class TopStoryProcessor implements Command {
       updatedStories = updatedStoriesCall.execute().body();
     } catch (IOException e) {
       e.printStackTrace();
+    }
+    if (updatedStories == null){
+      callback.onComplete();
+      return;
     }
     final int[] localIdsFromDatabase = topStoryGateway.getLocalTopStoryIds();
     StoryHelper storyHelper = new StoryHelper(topStoryIds, updatedStories, localIdsFromDatabase);
