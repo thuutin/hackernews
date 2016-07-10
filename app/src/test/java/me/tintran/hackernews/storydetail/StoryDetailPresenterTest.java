@@ -43,7 +43,7 @@ public class StoryDetailPresenterTest {
 
   @Test public void doShowListCommentsOnLoadSuccess() throws Exception {
     actionsListener.attachView(view);
-    actionsListener.loadComments();
+    actionsListener.onResume();
     verify(view).showLoading();
     verify(commentListUseCase).getCommentList(eq(storyId), callbackArgumentCaptor.capture());
     callbackArgumentCaptor.getValue().onComplete(mockCommentList);
@@ -68,6 +68,5 @@ public class StoryDetailPresenterTest {
     actionsListener.attachView(view);
     actionsListener.onPause();
     verify(view).unregisterReceiver();
-
   }
 }
