@@ -1,6 +1,9 @@
-package me.tintran.hackernews;
+package me.tintran.hackernews.sync;
 
 import java.util.List;
+import me.tintran.hackernews.StoryCommentGateway;
+import me.tintran.hackernews.StoryGateway;
+import me.tintran.hackernews.TopStoryGateway;
 import me.tintran.hackernews.data.HackerNewsApi;
 import me.tintran.hackernews.sync.StoryApiHelper;
 import me.tintran.hackernews.sync.TopStoriesCallback;
