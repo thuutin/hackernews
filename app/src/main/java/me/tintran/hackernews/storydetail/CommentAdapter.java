@@ -10,7 +10,7 @@ import me.tintran.hackernews.R;
 /**
  * Created by tin on 7/7/16.
  */
-public class CommentAdapter extends RecyclerView.Adapter<CommentItemViewHolder> {
+class CommentAdapter extends RecyclerView.Adapter<CommentItemViewHolder> {
 
   private List<Comment> comments;
 
@@ -21,7 +21,6 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentItemViewHolder> 
   @Override public void onBindViewHolder(CommentItemViewHolder holder, int position) {
     Comment comment = comments.get(position);
     holder.commentTextView.setText(comment.text);
-    holder.commentIdTextView.setText(String.valueOf(comment.id));
   }
 
   @Override public int getItemCount() {
@@ -32,7 +31,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentItemViewHolder> 
     return comments.get(position).id;
   }
 
-  public void swapData(List<Comment> comments) {
+  void swapData(List<Comment> comments) {
     this.comments = comments;
     notifyDataSetChanged();
   }
