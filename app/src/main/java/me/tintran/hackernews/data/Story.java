@@ -6,11 +6,13 @@ package me.tintran.hackernews.data;
 public final class Story {
   public final int id;
   public final String title;
-  public final String subtitle;
+  public final int score;
+  public final int time;
 
-  public Story(int id, String title, String subtitle) {
+  public Story(int id, String title, int score, int time) {
     this.id = id;
     this.title = title;
-    this.subtitle = subtitle;
+    this.score = score;
+    this.time = time;
   }
 }

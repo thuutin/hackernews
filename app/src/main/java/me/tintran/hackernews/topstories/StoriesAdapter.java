@@ -1,6 +1,7 @@
 package me.tintran.hackernews.topstories;
 
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,7 +30,8 @@ class StoriesAdapter extends RecyclerView.Adapter<StoryViewHolder> {
   @Override public void onBindViewHolder(StoryViewHolder holder, int position) {
     final Story story = storyList.get(position);
     holder.titleTextView.setText(story.title);
-    holder.subtitleTextView.setText(story.subtitle);
+    final String timeString = DateUtils.getRelativeTimeSpanString(holder.subtitleTextView.getContext(), story.time).toString();
+    holder.subtitleTextView.setText(story.score + "scores" + "    " + timeString);
     holder.story = story;
   }
 

@@ -70,9 +70,12 @@ public interface StoryGateway {
       for (int i = 0; i < size; i++) {
         query.moveToPosition(i);
         Story story =
-            new Story(query.getInt(query.getColumnIndex(TopStoriesContract.StoryColumns.STORYID)),
+            new Story(
+                query.getInt(query.getColumnIndex(TopStoriesContract.StoryColumns.STORYID)),
                 query.getString(query.getColumnIndex(StoryContract.StoryColumns.COLUMN_NAME_TITLE)),
-                query.getString(query.getColumnIndex(TopStoriesContract.StoryColumns.STORYID)));
+                query.getInt(query.getColumnIndex(StoryContract.StoryColumns.COLUMN_NAME_SCORE)),
+                query.getInt(query.getColumnIndex(StoryContract.StoryColumns.COLUMN_NAME_TIME))
+            );
         results.add(story);
       }
       query.close();
