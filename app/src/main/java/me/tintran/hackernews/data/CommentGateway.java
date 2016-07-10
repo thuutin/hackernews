@@ -53,7 +53,10 @@ public interface CommentGateway {
 
 
       String[] projection = {
-          CommentContract.CommentColumns.COLUMN_NAME_TEXT, CommentContract.CommentColumns.TABLE_NAME + "." + CommentContract.CommentColumns._ID
+          CommentContract.CommentColumns.COLUMN_NAME_TEXT,
+          CommentContract.CommentColumns.TABLE_NAME + "." + CommentContract.CommentColumns._ID,
+          CommentContract.CommentColumns.COLUMN_NAME_BY,
+          CommentContract.CommentColumns.COLUMN_NAME_TIME
       };
       final String selection = StoryCommentContract.StoryCommentColumns.COLUMN_NAME_STORYID
           + " = ?  AND "
@@ -74,10 +77,12 @@ public interface CommentGateway {
       for (int i = 0; i < query.getCount(); i++) {
         query.moveToPosition(i);
         final int commentId = query.getInt(query.getColumnIndex(CommentContract.CommentColumns._ID));
+        final String by = query.getString(query.getColumnIndex(CommentContract.CommentColumns.COLUMN_NAME_BY));
+        final int time = query.getInt(query.getColumnIndex(CommentContract.CommentColumns.COLUMN_NAME_TIME));
         final String commentText =
             query.getString(query.getColumnIndex(CommentContract.CommentColumns.COLUMN_NAME_TEXT));
         Comment comment = new Comment(commentId,
-            commentText == null ? null : Html.fromHtml(commentText).toString());
+            commentText == null ? null : Html.fromHtml(commentText).toString(), by, time);
         comments.add(comment);
       }
       query.close();

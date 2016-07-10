@@ -2,7 +2,6 @@ package me.tintran.hackernews.storydetail;
 
 import java.util.Arrays;
 import java.util.List;
-import me.tintran.hackernews.R;
 import me.tintran.hackernews.data.CommentListUseCase;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,9 +33,9 @@ public class StoryDetailPresenterTest {
     MockitoAnnotations.initMocks(this);
     storyId = 1;
     mockCommentList = Arrays.asList(
-        new Comment(1, "comment 1"),
-        new Comment(2, "comment 2"),
-        new Comment(3, "comment 3")
+        new Comment(1, "comment 1", "by", 0),
+        new Comment(2, "comment 2", "by", 0),
+        new Comment(3, "comment 3", "by", 0)
     );
     actionsListener = new StoryDetailPresenter(storyId, commentListUseCase);
   }

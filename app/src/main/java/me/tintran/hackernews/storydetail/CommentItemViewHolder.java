@@ -10,9 +10,11 @@ import me.tintran.hackernews.R;
  */
 class CommentItemViewHolder extends RecyclerView.ViewHolder {
   TextView commentTextView;
+  public TextView headlineTextView;
 
   CommentItemViewHolder(View itemView) {
     super(itemView);
     commentTextView = (TextView) itemView.findViewById(R.id.commentTextView);
+    headlineTextView= (TextView) itemView.findViewById(R.id.headline);
   }
 }
