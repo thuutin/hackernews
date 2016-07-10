@@ -31,7 +31,7 @@ class StoriesAdapter extends RecyclerView.Adapter<StoryViewHolder> {
     final Story story = storyList.get(position);
     holder.titleTextView.setText(story.title);
     final String timeString = DateUtils.getRelativeTimeSpanString(holder.subtitleTextView.getContext(), story.time).toString();
-    holder.subtitleTextView.setText(story.score + "scores" + "    " + timeString);
+    holder.subtitleTextView.setText(story.score + " scores" + "    " + timeString + "    by: " + story.by);
     holder.story = story;
   }
 

@@ -18,6 +18,7 @@ public class StoryContract {
     public static final String COLUMN_NAME_SCORE = "score";
     public static final String COLUMN_NAME_TIME = "time";
     public static final String COLUMN_NAME_TYPE = "type";
+    public static final String COLUMN_NAME_BY = "by";
     public static final String COLUMN_NAME_URL = "url";
     public static final String COLUMN_NAME_DELETED = "deleted";
   }

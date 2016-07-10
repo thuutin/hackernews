@@ -10,8 +10,7 @@ import me.tintran.hackernews.data.TopStoriesUseCase;
 
 public class StoriesRepository implements TopStoriesUseCase, CommentListUseCase {
 
-  public static final int NO_COMMENT = 2000;
-  public static final int LOADING_COMMENTS = 2001;
+
   private Context context;
 
   public StoriesRepository(Context context) {

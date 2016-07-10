@@ -99,7 +99,7 @@ public class TopStoryProcessorTest {
     allValues.get(1).onResponse(null, Response.success(storyItem3));
     allValues.get(2).onResponse(null, Response.success(storyItem5));
     verify(topStoryGateway).replaceTopStoryIds(topStories);
-    verify(storyGateway, times(3)).insertStory(intCaptor.capture(), isNull(String.class), anyInt(), anyBoolean(), anyInt(), anyLong(), isNull(String.class), isNull(String.class));
+    verify(storyGateway, times(3)).insertStory(intCaptor.capture(), isNull(String.class), anyInt(), anyBoolean(), anyInt(), anyLong(), isNull(String.class), isNull(String.class), isNull(String.class));
     assertEquals(1, ((int) intCaptor.getAllValues().get(0)));
     assertEquals(3, ((int) intCaptor.getAllValues().get(1)));
     assertEquals(5, ((int) intCaptor.getAllValues().get(2)));

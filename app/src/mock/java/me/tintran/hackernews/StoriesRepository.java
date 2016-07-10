@@ -19,23 +19,23 @@ import me.tintran.hackernews.storydetail.Comment;
 public class StoriesRepository implements TopStoriesUseCase, CommentListUseCase {
 
   private final static List<Story> STORIES = Arrays.asList(
-      new Story(1, "Title 1", "Subtitle 1"),
-      new Story(2, "Title 2", "Subtitle 2"),
-      new Story(3, "Title 3", "Subtitle 3"),
-      new Story(4, "Title 4", "Subtitle 4"),
-      new Story(5, "Title 5", "Subtitle 5"),
-      new Story(6, "Title 6", "Subtitle 6"),
-      new Story(7, "Title 7", "Subtitle 7")
+      new Story(1, "Title 1", 0, "Subtitle 1", 0),
+      new Story(2, "Title 2", 0, "Subtitle 2", 0),
+      new Story(3, "Title 3",0, "Subtitle 3",0),
+      new Story(4, "Title 4", 0,"Subtitle 4",0),
+      new Story(5, "Title 5", 0,"Subtitle 5",0),
+      new Story(6, "Title 6", 0,"Subtitle 6",0),
+      new Story(7, "Title 7", 0,"Subtitle 7",0)
   );
 
   private final static List<Comment> COMMENTS = Arrays.asList(
-      new Comment(1, "Comment 1"),
-      new Comment(2, "Comment 2"),
-      new Comment(3, "Comment 3"),
-      new Comment(4, "Comment 4"),
-      new Comment(5, "Comment 5"),
-      new Comment(6, "Comment 6"),
-      new Comment(7, "Comment 7")
+      new Comment(1, "Comment 1", null, 0),
+      new Comment(2, "Comment 2", null, 0),
+      new Comment(3, "Comment 3", null, 0),
+      new Comment(4, "Comment 4", null, 0),
+      new Comment(5, "Comment 5", null, 0),
+      new Comment(6, "Comment 6", null, 0),
+      new Comment(7, "Comment 7", null, 0)
   );
   private Context context;
 
@@ -61,4 +61,11 @@ public class StoriesRepository implements TopStoriesUseCase, CommentListUseCase 
       }
     }, 5000);
   }
+
+  public int getErrorString(int code){
+    return R.string.no_comments;
+  }
+
+
+
 }

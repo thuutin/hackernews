@@ -31,7 +31,7 @@ public class TopStoriesCallback implements Callback<StoryItem> {
   @Override public void onResponse(Call<StoryItem> call, Response<StoryItem> response) {
     StoryItem body = response.body();
     storyGateway.insertStory(body.id, body.title, body.descendants, body.deleted, body.score, body.time,
-        body.type, body.url);
+        body.type, body.url, body.by);
     storyCommentGateway.insert(body.id, body.kids);
     callOnReturn.onReturn(call);
   }

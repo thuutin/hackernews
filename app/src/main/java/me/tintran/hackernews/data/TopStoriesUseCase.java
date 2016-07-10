@@ -8,6 +8,9 @@ import java.util.List;
 
 public interface TopStoriesUseCase {
 
+  public static final int NO_COMMENT = 2000;
+  public static final int LOADING_COMMENTS = 2001;
+
   void getTopStories(Callback callback);
 
   interface Callback {

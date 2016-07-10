@@ -19,7 +19,7 @@ import me.tintran.hackernews.data.TopStoriesContract;
 public interface StoryGateway {
 
   void insertStory(int id, String title, int descendants, boolean deleted, int score, long time,
-      String type, String url);
+      String type, String url, String by);
 
   @WorkerThread List<Story> getTopStories();
 
@@ -34,7 +34,7 @@ public interface StoryGateway {
 
     @Override
     public void insertStory(int id, String title, int descendants, boolean deleted, int score,
-        long time, String type, String url) {
+        long time, String type, String url, String by) {
       final ContentValues contentvalues = new ContentValues();
       contentvalues.put(StoryContract.StoryColumns.COLUMN_NAME_TITLE, title);
       contentvalues.put(StoryContract.StoryColumns._ID, id);
@@ -44,6 +44,7 @@ public interface StoryGateway {
       contentvalues.put(StoryContract.StoryColumns.COLUMN_NAME_TIME, time);
       contentvalues.put(StoryContract.StoryColumns.COLUMN_NAME_TYPE, type);
       contentvalues.put(StoryContract.StoryColumns.COLUMN_NAME_URL, url);
+      contentvalues.put(StoryContract.StoryColumns.COLUMN_NAME_BY, by);
       sqLiteDatabase.insertWithOnConflict(StoryContract.StoryColumns.TABLE_NAME, null,
           contentvalues, SQLiteDatabase.CONFLICT_REPLACE);
     }
@@ -74,6 +75,7 @@ public interface StoryGateway {
                 query.getInt(query.getColumnIndex(TopStoriesContract.StoryColumns.STORYID)),
                 query.getString(query.getColumnIndex(StoryContract.StoryColumns.COLUMN_NAME_TITLE)),
                 query.getInt(query.getColumnIndex(StoryContract.StoryColumns.COLUMN_NAME_SCORE)),
+                query.getString(query.getColumnIndex(StoryContract.StoryColumns.COLUMN_NAME_BY)),
                 query.getInt(query.getColumnIndex(StoryContract.StoryColumns.COLUMN_NAME_TIME))
             );
         results.add(story);
