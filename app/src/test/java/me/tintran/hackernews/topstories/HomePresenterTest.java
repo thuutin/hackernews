@@ -13,7 +13,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.anyChar;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -80,7 +79,7 @@ public class HomePresenterTest {
     final TopStoriesUseCase.Callback capturedCallback = callbackArgumentCaptor.getValue();
     capturedCallback.onComplete(mockStories);
     verify(view).hideLoading();
-    verify(view).showStatusText(R.string.no_stories);
+    verify(view).showStatusText(R.string.loading_stories);
   }
 
   @Test public void clickOnItem_doMoveToDetailStory() throws Exception {

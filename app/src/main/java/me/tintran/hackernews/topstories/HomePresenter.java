@@ -32,7 +32,7 @@ final class HomePresenter implements HomeContract.ActionsListener, TopStoriesUse
       return;
     }
     if (stories.size() == 0) {
-      view.showStatusText(R.string.no_stories);
+      view.showStatusText(R.string.loading_stories);
       view.hideLoading();
     } else {
       view.showItem(stories);
