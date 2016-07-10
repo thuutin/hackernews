@@ -25,7 +25,7 @@ class GetCommentListAsyncTask extends AsyncTask<Integer, Void, List<Comment>> {
   private final WeakReference<CommentListUseCase.Callback> callback;
   private final WeakReference<Context> context;
 
-  public GetCommentListAsyncTask(Context context, CommentListUseCase.Callback callback) {
+  GetCommentListAsyncTask(Context context, CommentListUseCase.Callback callback) {
     this.context = new WeakReference<>(context);
     this.callback = new WeakReference<>(callback);
   }
@@ -35,7 +35,8 @@ class GetCommentListAsyncTask extends AsyncTask<Integer, Void, List<Comment>> {
       return null;
     }
     final int storyId = params[0];
-    CommentGateway commentGateway = new CommentGateway.SQLiteCommentGateway(new SQLiteDbHelper(context.get()).getReadableDatabase());
+    SQLiteDbHelper sqLiteDbHelper = new SQLiteDbHelper(context.get());
+    CommentGateway commentGateway = new CommentGateway.SQLiteCommentGateway(sqLiteDbHelper.getReadableDatabase());
     return commentGateway.getCommentsForStory(storyId);
   }
 

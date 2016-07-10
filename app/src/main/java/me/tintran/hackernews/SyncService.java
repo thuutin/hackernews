@@ -49,7 +49,7 @@ public class SyncService extends Service {
     SQLiteDbHelper sqliteDbHelper = new SQLiteDbHelper(SyncService.this);
     serviceHandler =
         new ServiceHandler(looper, sqliteDbHelper, getHackerNewsApi(HackerNewsApi.Stories.class),
-            getHackerNewsApi(HackerNewsApi.Comments.class), new StopListener() {
+            getHackerNewsApi(HackerNewsApi.Comments.class), new ServiceHandlerInteraction() {
           @Override public void notifyStop() {
             stopSelf();
           }

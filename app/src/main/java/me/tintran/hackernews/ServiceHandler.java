@@ -6,16 +6,10 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.support.annotation.WorkerThread;
-import android.util.Log;
 import android.util.SparseArray;
-import java.util.ArrayList;
-import java.util.List;
 import me.tintran.hackernews.StoryCommentGateway.SQLiteStoryCommentGateway;
 import me.tintran.hackernews.data.CommentGateway;
 import me.tintran.hackernews.data.HackerNewsApi;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * Created by tin on 7/9/16.
@@ -30,18 +24,18 @@ public final class ServiceHandler extends Handler {
   private final SQLiteOpenHelper sqLiteOpenHelper;
   private HackerNewsApi.Stories storiesApi;
   private HackerNewsApi.Comments commentsApi;
-  private final StopListener stopListener;
+  private final ServiceHandlerInteraction serviceHandlerInteraction;
 
   private SparseArray<Command> commentCommands = new SparseArray<>();
   private Command topStoryProcessor;
 
   ServiceHandler(Looper looper, SQLiteOpenHelper sqLiteOpenHelper, HackerNewsApi.Stories storiesApi,
-      HackerNewsApi.Comments commentsApi, StopListener stopListener) {
+      HackerNewsApi.Comments commentsApi, ServiceHandlerInteraction serviceHandlerInteraction) {
     super(looper);
     this.sqLiteOpenHelper = sqLiteOpenHelper;
     this.storiesApi = storiesApi;
     this.commentsApi = commentsApi;
-    this.stopListener = stopListener;
+    this.serviceHandlerInteraction = serviceHandlerInteraction;
   }
 
   @Override public void handleMessage(Message msg) {
@@ -91,14 +85,14 @@ public final class ServiceHandler extends Handler {
     boolean isAllEmpty = true;
 
     if (topStoryProcessor == null) {
-      stopListener.notifyLoadingTopStoryComplete();
+      serviceHandlerInteraction.notifyLoadingTopStoryComplete();
     } else {
       isAllEmpty = false;
     }
     for (int i = 0; i < commentCommands.size(); i++) {
       int keyAtI = commentCommands.keyAt(i);
       if (commentCommands.get(keyAtI) == null) {
-        stopListener.notifyLoadingCommentComplete(keyAtI);
+        serviceHandlerInteraction.notifyLoadingCommentComplete(keyAtI);
       } else {
         isAllEmpty = false;
       }
@@ -108,7 +102,7 @@ public final class ServiceHandler extends Handler {
       if (sqLiteDatabase != null && sqLiteDatabase.isOpen()) {
         sqLiteDatabase.close();
       }
-      stopListener.notifyStop();
+      serviceHandlerInteraction.notifyStop();
     }
   }
 
